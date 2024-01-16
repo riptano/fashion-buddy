@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/andy.gujral/Documents/GitHub/fashion-buddy/app/layout\":[\"static/media/4f117ec02fc103f8-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
