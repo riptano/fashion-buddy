@@ -3,8 +3,8 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata = {
-  title: `SwiftieGPT`,
-  description: `Welcome to SwiftieGPT, your go-to chatbot for all things Taylor Swift! Whether you're curious about her latest songs, looking for fun facts, or just want to chat about Tay's amazing journey, I'm here to keep you in the Swift loop. Let's talk Taylor!`,
+  title: `FashionBuddy`,
+  description: `Welcome to Fashion Buddy. Recreate your favorite outfit!`,
 };
 
 export default function RootLayout({ children }) {
