@@ -3,7 +3,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { GoogleGenerativeAIStream, Message, StreamingTextResponse } from 'ai';
  
 const { ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT } = process.env;
-console.log(ASTRA_DB_ENDPOINT);
 const db = new AstraDB(ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_API_ENDPOINT);
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
