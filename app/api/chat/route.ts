@@ -1,6 +1,6 @@
 import { AstraDB } from '@datastax/astra-db-ts';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { GoogleGenerativeAIStream, OpenAIStream, Message, StreamingTextResponse } from 'ai';
+import { GoogleGenerativeAIStream, StreamingTextResponse } from 'ai';
 import fs from 'fs';
 
 
