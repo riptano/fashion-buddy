@@ -3,7 +3,6 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GoogleGenerativeAIStream, StreamingTextResponse } from "ai";
 import fs from "fs";
 
-// 
 const { ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT, GOOGLE_API_KEY } =
   process.env;
 
@@ -13,7 +12,6 @@ const db = new AstraDB(ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT);
 // Connect to Google GenAI
 const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY || "");
 const gemini_model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-
 
 function fileToGenerativePart(path: fs.PathOrFileDescriptor, mimeType: string) {
   const part = {
