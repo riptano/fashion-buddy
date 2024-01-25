@@ -1,92 +1,64 @@
-//*** Haven't changed anything in this file! ****
+import { AstraDB } from "@datastax/astra-db-ts";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAIStream, StreamingTextResponse } from "ai";
+import fs from "fs";
 
-import { CohereClient } from "cohere-ai";
-import OpenAI from 'openai';
-import { OpenAIStream, StreamingTextResponse } from "ai";
-import {AstraDB} from "@datastax/astra-db-ts";
+const { ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT, GOOGLE_API_KEY } =
+  process.env;
 
-const {
-  ASTRA_DB_ENDPOINT,
-  ASTRA_DB_APPLICATION_TOKEN,
-  ASTRA_DB_NAMESPACE,
-  ASTRA_DB_COLLECTION,
-  COHERE_API_KEY,
-  OPENAI_API_KEY,
-} = process.env;
+// Connect to Astra
+const db = new AstraDB(ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT);
 
-const cohere = new CohereClient({
-  token: COHERE_API_KEY,
-});
+// Connect to Google GenAI
+const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY || "");
+const gemini_model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
 
-const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
-  baseURL: "https://open-assistant-ai.astra.datastax.com/v1",
-  defaultHeaders: {
-    "astra-api-token": ASTRA_DB_APPLICATION_TOKEN,
-  }
-});
-
-const astraDb = new AstraDB(ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT);
+// function fileToGenerativePart(path: fs.PathOrFileDescriptor, mimeType: string) {
+//   const part = {
+//     inlineData: {
+//       data: Buffer.from(fs.readFileSync(path)).toString("base64"),
+//       mimeType,
+//     },
+//   };
+//   return part;
+// }
 
 export async function POST(req: Request) {
-  try {
-    const {messages} = await req.json();
-    const latestMessage = messages[messages?.length - 1]?.content;
+  // Extract the `prompt` from the body of the request
+  const { messages, data } = await req.json();
 
-    let docContext = '';
+  const currentMessage = messages[messages.length - 1];
 
-    const embedded = await cohere.embed({
-      texts: [latestMessage],
-      model: "embed-english-light-v3.0",
-      inputType: "search_query",
-    });
+  // Prompt that gets sent to the model
+  const prompt = currentMessage.content;
+  console.log(prompt);
+  console.log(data.category)
+  console.log(data.gender)
+  const textPart = { text: prompt };
 
-    try {
-      const collection = await astraDb.collection(ASTRA_DB_COLLECTION);
-      const cursor = collection.find(null, {
-        sort: {
-          $vector: embedded?.embeddings[0],
-        },
-        limit: 10,
-      });
+  // fileToGenerativePart(image, image_type)
+  // const image = fileToGenerativePart("app/sample_outfit.jpeg", "image/jpeg");
 
-      const documents = await cursor.toArray();
+  // Image part that gets sent to the model
+  const imagePart = {
+    inlineData: {
+      // base64 of the image
+      data: data.imageBase64,
+      mimeType: "image/jpeg",
+    },
+  };
 
-      const docsMap = documents?.map(doc => doc.text);
+  const request = {
+    contents: [{ role: "user", parts: [textPart, imagePart] }],
+  };
 
-      docContext = JSON.stringify(docsMap);
-    } catch (e) {
-      console.log("Error querying db...");
-      docContext = "";
-    }
+  const geminiStream = await gemini_model.generateContentStream(request);
 
-    const Template = {
-      role: 'system',
-      content: `You are an AI assistant who is a Taylor Swift super fan. Use the below context to augement what you know about Taylor Swift and her music.
-        The context will provide you with the most recent page data from her wikipedia, tour website and others.
-        If the context doesn't include the information you need answer based on your existing knowledge and don't mention the source of your information or what the context does or doesn't include.
-        Format responses using markdown where applicable and don't return images.
-        ----------------
-        START CONTEXT
-        ${docContext}
-        END CONTEXT
-        ----------------
-        QUESTION: ${latestMessage}
-        ----------------      
-        `
-    };
+  // Convert the response into a friendly text-stream
+  const stream = GoogleGenerativeAIStream(geminiStream);
 
-    const response = await openai.chat.completions.create(
-      {
-        model: 'gpt-4',
-        stream: true,
-        messages: [Template, ...messages],
-      }
-    );
-    const stream = OpenAIStream(response);
-
-    return new StreamingTextResponse(stream);
-  } catch (e) {
-    throw e;
-  }
+  //console.log(new StreamingTextResponse(stream))
+  
+  // Respond with the stream
+  return new StreamingTextResponse(stream);
 }

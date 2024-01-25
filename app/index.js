@@ -1,4 +1,3 @@
-
 console.log("Is this working?")
 const {VertexAI} = require('@google-cloud/vertexai');
 
