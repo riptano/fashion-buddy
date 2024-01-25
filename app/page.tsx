@@ -45,6 +45,7 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
+      <h1>Fashion Buddy</h1>
       <input type="file" onChange={onImageChange} />
       <img src={uploadedImage} />
       <p>prompt: {prompt}</p>
