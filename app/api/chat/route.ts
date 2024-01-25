@@ -1,87 +1,62 @@
-import OpenAI from "openai";
-import { OpenAIStream, StreamingTextResponse } from "ai";
 import { AstraDB } from "@datastax/astra-db-ts";
-import { GoogleVertexAIMultimodalEmbeddings } from "langchain/experimental/multimodal_embeddings/googlevertexai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAIStream, StreamingTextResponse } from "ai";
+import fs from "fs";
 
-const {
-  ASTRA_DB_ENDPOINT,
-  ASTRA_DB_APPLICATION_TOKEN,
-  ASTRA_DB_NAMESPACE,
-  ASTRA_DB_COLLECTION,
-  OPENAI_API_KEY,
-} = process.env;
+const { ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT, GOOGLE_API_KEY } =
+  process.env;
 
-// Create an OpenAI API client (that's edge friendly!)
-const openai = new OpenAI({
-  apiKey: OPENAI_API_KEY,
-  // Not working for some reason
-  // baseURL: "https://open-assistant-ai.astra.datastax.com/v1",
-  // defaultHeaders: {
-  //   "astra-api-token": ASTRA_DB_APPLICATION_TOKEN,
-  // }
-});
+// Connect to Astra
+const db = new AstraDB(ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT);
 
-// IMPORTANT! Set the runtime to edge
-export const runtime = "edge";
+// Connect to Google GenAI
+const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY || "");
+const gemini_model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
 
-// Establish connection with database
-// const astraDb = new AstraDB(ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT);
+// function fileToGenerativePart(path: fs.PathOrFileDescriptor, mimeType: string) {
+//   const part = {
+//     inlineData: {
+//       data: Buffer.from(fs.readFileSync(path)).toString("base64"),
+//       mimeType,
+//     },
+//   };
+//   return part;
+// }
 
 export async function POST(req: Request) {
-  // 'data' contains the additional data that you have sent:
+  // Extract the `prompt` from the body of the request
   const { messages, data } = await req.json();
 
-  // Initialize GoogleVertexAIMultimodalEmbeddings and OpenAI
-  // const vertexEmbed = new GoogleVertexAIMultimodalEmbeddings();
-
-  // Query the DB
-  /*
-  try {
-    const collection = await astraDb.collection(ASTRA_DB_COLLECTION);
-    const embedding = await vertexEmbed.embedImageQuery(data.imageUrl);
-    const cursor = collection
-      .find(null, {
-        sort: {
-          $vector: embedding,
-        },
-        limit: 3,
-      })
-      .toArray()
-      .then((docs) => {
-        docs.forEach((doc) => console.log(doc));
-      });
-  } catch (e) {
-    console.log("Error querying db...");
-  }
-  */
-
-  const initialMessages = messages.slice(0, -1);
   const currentMessage = messages[messages.length - 1];
 
-  // Ask OpenAI for a streaming chat completion given the prompt
-  const response = await openai.chat.completions.create({
-    model: "gpt-4-vision-preview",
-    stream: true,
-    max_tokens: 150,
-    messages: [
-      ...initialMessages,
-      {
-        ...currentMessage,
-        content: [
-          { type: "text", text: currentMessage.content },
+  // Prompt that gets sent to the model
+  const prompt = currentMessage.content;
+  console.log(prompt);
+  const textPart = { text: prompt };
 
-          // forward the image information to OpenAI:
-          {
-            type: "image_url",
-            image_url: data.imageUrl,
-          },
-        ],
-      },
-    ],
-  });
+  // fileToGenerativePart(image, image_type)
+  // const image = fileToGenerativePart("app/sample_outfit.jpeg", "image/jpeg");
+
+  // Image part that gets sent to the model
+  const imagePart = {
+    inlineData: {
+      // base64 of the image
+      data: data.imageBase64,
+      mimeType: "image/jpeg",
+    },
+  };
+
+  const request = {
+    contents: [{ role: "user", parts: [textPart, imagePart] }],
+  };
+
+  const geminiStream = await gemini_model.generateContentStream(request);
 
   // Convert the response into a friendly text-stream
-  const stream = OpenAIStream(response);
+  const stream = GoogleGenerativeAIStream(geminiStream);
+
+  console.log(new StreamingTextResponse(stream))
+  
   // Respond with the stream
   return new StreamingTextResponse(stream);
 }
