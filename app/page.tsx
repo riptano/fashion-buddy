@@ -14,7 +14,7 @@ export default function Chat() {
   });
   const [uploadedImage, setImage] = useState('');
   const [processedData, setProcessedData] = useState('');
-  const [prompt, setPrompt] = useState("tell me about the shoes in this photo");
+  const [prompt, setPrompt] = useState("describe the sweater in this photo");
 
   const onImageChange = (event) => {
     const file = event.target.files[0];
