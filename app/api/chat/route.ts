@@ -13,15 +13,15 @@ const db = new AstraDB(ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT);
 const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY || "");
 const gemini_model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
 
-function fileToGenerativePart(path: fs.PathOrFileDescriptor, mimeType: string) {
-  const part = {
-    inlineData: {
-      data: Buffer.from(fs.readFileSync(path)).toString("base64"),
-      mimeType,
-    },
-  };
-  return part;
-}
+// function fileToGenerativePart(path: fs.PathOrFileDescriptor, mimeType: string) {
+//   const part = {
+//     inlineData: {
+//       data: Buffer.from(fs.readFileSync(path)).toString("base64"),
+//       mimeType,
+//     },
+//   };
+//   return part;
+// }
 
 export async function POST(req: Request) {
   // Extract the `prompt` from the body of the request
@@ -40,7 +40,8 @@ export async function POST(req: Request) {
   // Image part that gets sent to the model
   const imagePart = {
     inlineData: {
-      data: data.imageUrl,
+      // base64 of the image
+      data: data.imageBase64,
       mimeType: "image/jpeg",
     },
   };
@@ -53,6 +54,9 @@ export async function POST(req: Request) {
 
   // Convert the response into a friendly text-stream
   const stream = GoogleGenerativeAIStream(geminiStream);
+
+  console.log(new StreamingTextResponse(stream))
+  
   // Respond with the stream
   return new StreamingTextResponse(stream);
 }

@@ -46,11 +46,12 @@ export default function Chat() {
         onSubmit={(e) => {
           handleSubmit(e, {
             data: {
-              imageUrl: processedData,
+              imageBase64: processedData,
             },
           });
         }}
       >
+        
         <input
           className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
           value={input}
