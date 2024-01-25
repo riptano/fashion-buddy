@@ -1,6 +1,6 @@
 "use client";
 
-import { useChat } from "ai/react";
+import { useCompletion } from "ai/react";
 import { useState } from "react";
 
 function processBase64Data(data) {
@@ -9,9 +9,12 @@ function processBase64Data(data) {
 }
 
 export default function Chat() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
-  const [uploadedImage, setImage] = useState(null);
-  const [processedData, setProcessedData] = useState(null);
+  const {completion, complete} = useCompletion({
+    api: '/api/chat'
+  });
+  const [uploadedImage, setImage] = useState('');
+  const [processedData, setProcessedData] = useState('');
+  const [prompt, setPrompt] = useState("tell me about the shoes in this photo");
 
   const onImageChange = (event) => {
     const file = event.target.files[0];
@@ -28,36 +31,27 @@ export default function Chat() {
     }
   };
 
+  async function handleClick() {
+    console.log('handleClick called');
+      const requestoptions = {
+        body: {
+          imageBase64: processedData
+        }
+      };
+      const response = await complete(prompt, requestoptions);
+      if (!response) throw new Error("Completion not fetched");
+      console.log("RESPONSE HERE", response);
+    }
+
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
       <input type="file" onChange={onImageChange} />
-      <p>Sample Image</p>
       <img src={uploadedImage} />
-      {messages.length > 0
-        ? messages.map((m) => (
-            <div key={m.id} className="whitespace-pre-wrap">
-              {m.role === "user" ? "User: " : "AI: "}
-              {m.content}
-            </div>
-          ))
-        : null}
+      <p>prompt: {prompt}</p>
+      <p>response: {completion}</p>
 
-      <form
-        onSubmit={(e) => {
-          handleSubmit(e, {
-            data: {
-              imageBase64: processedData,
-            },
-          });
-        }}
-      >
-        
-        <input
-          className="fixed bottom-0 w-full max-w-md p-2 mb-8 border border-gray-300 rounded shadow-xl"
-          value={input}
-          placeholder="Ask a question about this image"
-          onChange={handleInputChange}
-        />
+      <form>
+        <button onClick={() => handleClick()} className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700">Submit</button>
       </form>
     </div>
   );
