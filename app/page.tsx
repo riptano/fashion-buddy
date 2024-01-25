@@ -8,7 +8,7 @@ export default function FashionBuddy() {
   const [uploadedImage, setImage] = useState(null);
   const [processedData, setProcessedData] = useState(null);
 
-  const { messages, setMessages, input, handleInputChange, handleSubmit: handleChatSubmit } = useChat();
+  const { messages, setMessages, input, append, handleInputChange, handleSubmit: handleChatSubmit } = useChat();
   const [categories, setCategories] = useState({
     TOPS: false,
     DRESSES_JUMPSUITS: false,
@@ -52,21 +52,22 @@ export default function FashionBuddy() {
     setSelectedGender(event.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    //Convert the selected categories to a string
+  
+    // Convert the selected categories to a string
     const selectedCategories = Object.entries(categories)
       .filter(([_, isSelected]) => isSelected)
       .map(([category]) => category)
       .join(', ');
-
-    //Hardcode the message prompt and id  
+  
+    // Hardcode the message prompt and id
     const hardcodedPrompt = "What's in this photo?";
-    const newMessageId = "4"
-    setMessages([...messages, { id: newMessageId, role: 'user', content: hardcodedPrompt }]);
+    const newMessageId = "4"; // Ensure this ID is unique
+  
 
-    //Submit payload to data
+  
+    // Submit payload to data
     handleChatSubmit(e, {
       data: {
         imageUrl: uploadedImage,
@@ -75,7 +76,8 @@ export default function FashionBuddy() {
         imageBase64: processedData,
       },
     });
-
+    // Append the hardcoded message using useChat's append function
+    append({ id: newMessageId, role: 'user', content: hardcodedPrompt });
   };
 
   return (

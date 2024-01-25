@@ -32,7 +32,7 @@ export async function POST(req: Request) {
   // Prompt that gets sent to the model
   const prompt = currentMessage.content;
   console.log(prompt);
-  console.log(data.category)
+  //console.log(data.category)
   console.log(data.gender)
   const textPart = { text: prompt };
 
