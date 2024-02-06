@@ -1,6 +1,6 @@
 "use client";
 
-import { useCompletion } from "ai/react";
+import ResultsContainer from "@/components/ResultsContainer";
 import { useState } from "react";
 
 function processBase64Data(data) {
@@ -9,12 +9,10 @@ function processBase64Data(data) {
 }
 
 export default function Chat() {
-  const {completion, complete} = useCompletion({
-    api: '/api/chat'
-  });
   const [uploadedImage, setImage] = useState('');
   const [processedData, setProcessedData] = useState('');
   const [prompt, setPrompt] = useState("describe the sweater in this photo");
+  const [items, setItems] = useState([]);
 
   const onImageChange = (event) => {
     const file = event.target.files[0];
@@ -31,29 +29,45 @@ export default function Chat() {
     }
   };
 
-  async function handleClick() {
-    console.log('handleClick called');
-      const requestoptions = {
-        body: {
-          imageBase64: processedData
-        }
-      };
-      const response = await complete(prompt, requestoptions);
-      if (!response) throw new Error("Completion not fetched");
-      console.log("RESPONSE HERE", response);
+  const getProducts = async () => {
+    try {
+      const response = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          imageBase64: processedData,
+          prompt
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+
+      const items = data.products;
+      console.log(items);
+      setItems(items);
+    } catch (error) {
+      console.error(error);
     }
+  }
 
   return (
-    <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
-      <h1>Fashion Buddy</h1>
-      <input type="file" onChange={onImageChange} />
-      <img src={uploadedImage} />
-      <p>prompt: {prompt}</p>
-      <p>response: {completion}</p>
+    <main>
+      <div className="flex flex-col items-center w-full overflow-y-auto">
+        <h1>Fashion Buddy</h1>
+        <input type="file" onChange={onImageChange} />
+        <img src={uploadedImage} />
+        <p>prompt: {prompt}</p>
+        {/* <p>response: {completion}</p> */}
 
-      <form>
-        <button onClick={() => handleClick()} className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700">Submit</button>
-      </form>
-    </div>
+        {/* <form> */}
+          <button onClick={getProducts} className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700">Submit</button>
+        {/* </form> */}
+        
+        {items && <ResultsContainer items={items} />}
+      </div>
+    </main>
   );
 }
