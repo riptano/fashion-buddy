@@ -2,15 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
+@layer base {
+  :root {
+    --foreground-rgb: 0, 0, 0;
+    --background-rgb: 214, 219, 220;
+    --background-end-rgb: 255, 255, 255;
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+    --text-primary: #090909;
+    --text-inverse: #ffffff;
+
+    --cream: #F9F8F5;
+    --slime: #C5F277;
+    --tan: #E5E0D0;
+
+  }
+
+  body {
+    color: rgb(var(--foreground-rgb));
+    background: rgb(var(--background-rgb));
+  }
+
+  .clothing-background {
+    background-image: url('../assets/image.png');
+  }
+
+  .cream-background {
+    background: var(--cream);
+  }
+
+  .slime-background {
+    background: var(--slime);
+  }
+
+  .tan-background {
+    background: var(--tan);
+  }
 }
 
 @layer utilities {
