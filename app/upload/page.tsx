@@ -1,26 +1,30 @@
 "use client";
+import { useRef, useState } from "react";
+import { Camera, FileEarmark, Stars, Upload } from "react-bootstrap-icons";
+import Link from "next/link";
+import { useImage, useProcessedImage } from "@/components/ImageContext";
 
-import ResultsContainer from "@/components/ResultsContainer";
-import { useState } from "react";
-
-function processBase64Data(data) {
+function processBase64Data(data: string) {
   const modifiedData = data.replace("data:image/jpeg;base64,", "");
   return modifiedData;
 }
 
 export default function Chat() {
-  const [uploadedImage, setImage] = useState('');
-  const [processedData, setProcessedData] = useState('');
-  const [prompt, setPrompt] = useState("describe the sweater in this photo");
-  const [items, setItems] = useState([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const onImageChange = (event) => {
-    const file = event.target.files[0];
+  const [image, setImage] = useImage();
+  const [, setProcessedImage] = useProcessedImage();
+
+  const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event?.target?.files?.[0];
+    if (!file) {
+      return;
+    }
     var reader = new FileReader();
     reader.onload = function () {
-      var base64data = reader.result;
+      var base64data = reader.result as string;
       const processedData = processBase64Data(base64data);
-      setProcessedData(processedData);
+      setProcessedImage(processedData);
     };
     reader.readAsDataURL(file);
     if (event.target.files && event.target.files[0]) {
@@ -29,44 +33,52 @@ export default function Chat() {
     }
   };
 
-  const getProducts = async () => {
-    try {
-      const response = await fetch("/api/products", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          imageBase64: processedData,
-          prompt
-        }),
-      });
-
-      const data = await response.json();
-      console.log(data);
-
-      const items = data.products;
-      console.log(items);
-      setItems(items);
-    } catch (error) {
-      console.error(error);
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
-  }
+  };
 
   return (
-    <main>
-      <div className="flex flex-col items-center w-full overflow-y-auto">
-        <h1>Fashion Buddy</h1>
-        <input type="file" onChange={onImageChange} />
-        <img src={uploadedImage} />
-        <p>prompt: {prompt}</p>
-        {/* <p>response: {completion}</p> */}
-
-        {/* <form> */}
-          <button onClick={getProducts} className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700">Submit</button>
-        {/* </form> */}
-        
-        {items && <ResultsContainer items={items} />}
+    <main className="tan-background h-full">
+      <div className="flex flex-col items-center w-full h-full overflow-y-auto p-6">
+        <div className="grow flex flex-col items-center justify-center">
+          {image ? (
+            <img src={image} alt='user image' />
+          ) : (
+            <p className="text-center text-lg">Add a photo of the style you love. We&apos;ll help you add it to your wardrobe</p>
+          )}
+        </div>
+        <div className="w-full">
+          {image ? (
+            <Link href="/recommended-products">
+              <button className="slime-background flex items-center justify-center gap-2 w-full rounded-full p-4 text-lg font-semibold" >
+                <Stars />
+                  Recommended products
+              </button>
+            </Link>
+          ): (
+            <div>
+              <input
+                className="hidden"
+                id="uploadInput"
+                accept="image/*"
+                ref={fileInputRef}
+                type="file"
+                onChange={onImageChange}
+              />
+              <label htmlFor="uploadInput">
+                <button
+                  className="flex items-center justify-center gap-2 w-full rounded-full p-4 text-lg font-semibold bg-white"
+                  onClick={handleUploadClick}
+                  type="button">
+                    Upload Photo
+                    <Upload />
+                </button>
+              </label>
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );
