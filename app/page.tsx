@@ -7,7 +7,7 @@ import datastaxLogo from "../assets/datastax-logo.png";
 export default function Home() {
 
   return (
-    <main className="clothing-background h-full">
+    <section className="clothing-background h-full">
       <div className="flex flex-col h-full p-6">
         <div className="grow flex flex-col justify-center">
           <h1 className="text-6xl font-bold mb-6">Fashion, Meet AI.</h1>
@@ -27,6 +27,6 @@ export default function Home() {
           </Link>
         </div>
       </div>
-    </main>
+    </section>
   )
 }
