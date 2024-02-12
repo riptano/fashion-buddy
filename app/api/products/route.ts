@@ -38,7 +38,6 @@ export async function POST(req: Request) {
         const result = await embeddings_model.embedContent(searchPrompt);
         const embedding = result.embedding;
         const vector = embedding.values;
-        // console.log(vector);
 
         const collection = await db.collection("fashion_buddy");
 

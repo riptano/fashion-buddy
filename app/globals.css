@@ -4,12 +4,9 @@
 
 @layer base {
   :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
-
     --text-primary: #090909;
     --text-inverse: #ffffff;
+    --text-tertiary: #6V6F73;
 
     --cream: #F9F8F5;
     --slime: #C5F277;
@@ -37,10 +34,17 @@
   .tan-background {
     background: var(--tan);
   }
-}
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .text-tertiary {
+    color: var(--text-tertiary);
+  }
+
+  .dark-background {
+    background: var(--text-primary);
+    color: var(--text-inverse)
+  }
+
+  .border-bottom {
+    border-bottom: 1px solid var(--text-primary);
   }
 }

@@ -8,14 +8,11 @@ interface Props {
 const ResultsContainer = ({ items }: Props): JSX.Element => {
 
   return (
-    <>
-      <div className="flex flex-col items-center overflow-y-auto w-full divide-y divide-black p-4">
-        
-        {items.map(item => (
-          <Product key={item._id} item={item} />
-        ))}
-      </div>
-    </>
+    <div className="grow flex flex-col items-center overflow-y-auto w-full divide-y divide-black">
+      {items.map(item => (
+        <Product key={item._id} item={item} />
+      ))}
+    </div>
   )
 }
 
