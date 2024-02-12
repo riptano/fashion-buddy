@@ -49,8 +49,8 @@ export default function RecommendedProducts() {
   }, []);
 
   return (
-    <main className="tan-background">
-      <div className="flex flex-col p-6 h-screen">
+    <section className="tan-background h-full">
+      <div className="flex flex-col p-6 h-full">
         <div className="flex pb-4 gap-4 border-bottom">
           <Image className="rounded-full" src={image} width={24} height={24} alt="user image" />
           <h3 className="text-lg">Results</h3>
@@ -65,6 +65,6 @@ export default function RecommendedProducts() {
           </Link>
         </div>
       </div>
-    </main>
+    </section>
   )
 }

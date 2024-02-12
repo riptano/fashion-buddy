@@ -40,7 +40,7 @@ export default function Chat() {
   };
 
   return (
-    <main className="tan-background h-full">
+    <section className="tan-background h-full">
       <div className="flex flex-col items-center w-full h-full overflow-y-auto p-6">
         <div className="grow flex flex-col items-center justify-center">
           {image ? (
@@ -80,6 +80,6 @@ export default function Chat() {
           )}
         </div>
       </div>
-    </main>
+    </section>
   );
 }
