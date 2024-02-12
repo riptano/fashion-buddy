@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Syne } from "next/font/google";
 import "./globals.css";
+import ImageProvider from "@/components/ImageContext";
 
 const syne = Syne({ subsets: ["latin"] });
 
@@ -16,7 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${syne.className} h-screen`}>{children}</body>
+      <body className={`${syne.className} h-screen`}>
+        <ImageProvider>
+          {children}
+        </ImageProvider>
+      </body>
     </html>
   );
 }
