@@ -1,8 +1,9 @@
 "use client";
 import { useRef, } from "react";
-import { Camera, FileEarmark, Stars, Upload } from "react-bootstrap-icons";
+import { ArrowRepeat, Camera, FileEarmark, Stars, Upload } from "react-bootstrap-icons";
 import Link from "next/link";
 import { useImage, useProcessedImage } from "@/components/ImageContext";
+import { createReadStream } from "fs";
 
 export default function UploadPhoto() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -15,6 +16,7 @@ export default function UploadPhoto() {
     if (!file) {
       return;
     }
+
     var reader = new FileReader();
     reader.onload = function () {
       var base64data = reader.result as string;
@@ -37,6 +39,14 @@ export default function UploadPhoto() {
     }
   };
 
+  const handleRefreshClick = () => {
+    setImage('');
+    setProcessedImage({
+      base64Data: '',
+      fileType: '',
+    });
+  };
+
   return (
     <section className="tan-background h-full">
       <div className="flex flex-col items-center w-full h-full overflow-y-auto p-6">
@@ -49,12 +59,20 @@ export default function UploadPhoto() {
         </div>
         <div className="w-full">
           {image ? (
-            <Link href="/recommended-products">
-              <button className="slime-background flex items-center justify-center gap-2 w-full rounded-full p-4 text-lg font-semibold" >
-                <Stars />
-                  Recommended products
+            <div className="flex justify-between gap-4">
+              <Link className="grow" href="/recommended-products">
+                <button className="slime-background flex items-center justify-center gap-2 rounded-full w-full p-4 text-lg font-semibold" >
+                  <Stars />
+                    Recommended products
+                </button>
+              </Link>
+              <button
+                className="dark-background flex items-center justify-center rounded-full px-5"
+                onClick={handleRefreshClick}
+              >
+                <ArrowRepeat />
               </button>
-            </Link>
+            </div>
           ): (
             <>
               <div className="mb-2">
@@ -65,6 +83,7 @@ export default function UploadPhoto() {
                   capture="environment"
                   onChange={onImageChange}
                   id="cameraInput"
+                  name="picture"
                 />
                   <label htmlFor="cameraInput">
                     <button
