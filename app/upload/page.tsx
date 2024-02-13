@@ -1,15 +1,10 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, } from "react";
 import { Camera, FileEarmark, Stars, Upload } from "react-bootstrap-icons";
 import Link from "next/link";
 import { useImage, useProcessedImage } from "@/components/ImageContext";
 
-function processBase64Data(data: string) {
-  const modifiedData = data.replace("data:image/jpeg;base64,", "");
-  return modifiedData;
-}
-
-export default function Chat() {
+export default function UploadPhoto() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [image, setImage] = useImage();
@@ -23,8 +18,11 @@ export default function Chat() {
     var reader = new FileReader();
     reader.onload = function () {
       var base64data = reader.result as string;
-      const processedData = processBase64Data(base64data);
-      setProcessedImage(processedData);
+      const processedData = base64data.split(",")[1];
+      setProcessedImage({
+        base64Data: processedData,
+        fileType: file.type,
+      });
     };
     reader.readAsDataURL(file);
     if (event.target.files && event.target.files[0]) {
@@ -58,25 +56,48 @@ export default function Chat() {
               </button>
             </Link>
           ): (
-            <div>
-              <input
-                className="hidden"
-                id="uploadInput"
-                accept="image/*"
-                ref={fileInputRef}
-                type="file"
-                onChange={onImageChange}
-              />
-              <label htmlFor="uploadInput">
-                <button
-                  className="flex items-center justify-center gap-2 w-full rounded-full p-4 text-lg font-semibold bg-white"
-                  onClick={handleUploadClick}
-                  type="button">
-                    Upload Photo
+            <>
+              <div className="mb-2">
+                <input
+                  className="hidden"
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={onImageChange}
+                  id="cameraInput"
+                />
+                  <label htmlFor="cameraInput">
+                    <button
+                      className="flex items-center justify-center gap-2 w-full rounded-full p-4 text-lg font-semibold dark-background"
+                      onClick={handleUploadClick}
+                      type="button"
+                    >
+                      <Camera />
+                      Open Camera
+                    </button>
+                  </label>
+                </div>
+              <div>
+                <input
+                  className="hidden"
+                  id="uploadInput"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  type="file"
+                  onChange={onImageChange}
+                />
+                <label htmlFor="uploadInput">
+                  <button
+                    className="flex items-center justify-center gap-2 w-full rounded-full p-4 text-lg font-semibold bg-white"
+                    onClick={handleUploadClick}
+                    type="button"
+                  >
                     <Upload />
-                </button>
-              </label>
-            </div>
+                    Upload Photo 
+                  </button>
+                </label>
+              </div>   
+            </>
           )}
         </div>
       </div>

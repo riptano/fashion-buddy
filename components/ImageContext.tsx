@@ -5,7 +5,7 @@ const useImageState = () =>
   useState<string>();
 
 const useProcessedImageState = () =>
-  useState<string>();
+  useState<{base64Data: string, fileType: string}>();
 
 export const ImageContext = createContext<ReturnType<
   typeof useImageState
