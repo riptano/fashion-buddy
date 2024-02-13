@@ -1,7 +1,7 @@
 import { AstraDB } from "@datastax/astra-db-ts";
 import { FindOptions } from "@datastax/astra-db-ts/dist/collections";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 
 // Environment variables
@@ -21,17 +21,16 @@ export async function POST(req: Request) {
         const data = await req.json();
 
         // Prompt that gets sent to the model
-        const textPart = { text: data.prompt };
+        const prompt = 'describe the clothing items worn in this photo';
         // Image part that gets sent to the model
         const imagePart = {
             inlineData: {
-                // base64 of the image
                 data: data.imageBase64,
-                mimeType: "image/jpeg",
+                mimeType: data.fileType,
             },
         };
 
-        const geminiResponse = await gemini_model.generateContent([textPart, imagePart]);
+        const geminiResponse = await gemini_model.generateContent([prompt, imagePart]);
 
         // Create embeddings of product description 
         const searchPrompt = geminiResponse.response.text();
@@ -42,7 +41,7 @@ export async function POST(req: Request) {
         const collection = await db.collection("fashion_buddy");
 
         // search for similar items on Astra
-        const metadataFilter = {category: 'TOPS'}
+        // const metadataFilter = {category: 'TOPS'}
         const options: FindOptions = {
             sort: {
                 "$vector": vector
@@ -54,7 +53,7 @@ export async function POST(req: Request) {
             }
         };
 
-        const cursor = collection.find(metadataFilter, options);
+        const cursor = collection.find({}, options);
 
         const docs = await cursor.toArray();
 

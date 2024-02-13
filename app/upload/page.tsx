@@ -1,15 +1,10 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, } from "react";
 import { Camera, FileEarmark, Stars, Upload } from "react-bootstrap-icons";
 import Link from "next/link";
 import { useImage, useProcessedImage } from "@/components/ImageContext";
 
-function processBase64Data(data: string) {
-  const modifiedData = data.replace("data:image/jpeg;base64,", "");
-  return modifiedData;
-}
-
-export default function Chat() {
+export default function UploadPhoto() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [image, setImage] = useImage();
@@ -23,8 +18,11 @@ export default function Chat() {
     var reader = new FileReader();
     reader.onload = function () {
       var base64data = reader.result as string;
-      const processedData = processBase64Data(base64data);
-      setProcessedImage(processedData);
+      const processedData = base64data.split(",")[1];
+      setProcessedImage({
+        base64Data: processedData,
+        fileType: file.type,
+      });
     };
     reader.readAsDataURL(file);
     if (event.target.files && event.target.files[0]) {

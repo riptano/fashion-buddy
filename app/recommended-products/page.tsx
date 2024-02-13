@@ -11,9 +11,8 @@ export default function RecommendedProducts() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState([]);
-  const [prompt, setPrompt] = useState("describe the sweater in this photo");
-  const [image, setImage] = useImage();
-  const [processedImage, setProcessedImage] = useProcessedImage();
+  const [image] = useImage();
+  const [processedImage] = useProcessedImage();
 
   const getProducts = async () => {
     try {
@@ -24,8 +23,8 @@ export default function RecommendedProducts() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          imageBase64: processedImage,
-          prompt
+          imageBase64: processedImage.base64Data,
+          fileType: processedImage.fileType,
         }),
       });
 
