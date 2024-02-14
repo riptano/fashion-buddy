@@ -6,7 +6,8 @@ import { useImage, useProcessedImage } from "@/components/ImageContext";
 import { createReadStream } from "fs";
 
 export default function UploadPhoto() {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
 
   const [image, setImage] = useImage();
   const [, setProcessedImage] = useProcessedImage();
@@ -34,10 +35,16 @@ export default function UploadPhoto() {
   };
 
   const handleUploadClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+    if (uploadInputRef.current) {
+      uploadInputRef.current.click();
     }
   };
+
+  const handleTakePhotoClick = () => {
+    if (photoInputRef.current) {
+      photoInputRef.current.click();
+    }
+  }
 
   const handleRefreshClick = () => {
     setImage('');
@@ -82,13 +89,14 @@ export default function UploadPhoto() {
                   accept="image/*"
                   capture="environment"
                   onChange={onImageChange}
+                  ref={photoInputRef}
                   id="cameraInput"
                   name="picture"
                 />
                   <label htmlFor="cameraInput">
                     <button
                       className="flex items-center justify-center gap-2 w-full rounded-full p-4 text-lg font-semibold dark-background"
-                      onClick={handleUploadClick}
+                      onClick={handleTakePhotoClick}
                       type="button"
                     >
                       <Camera />
@@ -101,7 +109,7 @@ export default function UploadPhoto() {
                   className="hidden"
                   id="uploadInput"
                   accept="image/*"
-                  ref={fileInputRef}
+                  ref={uploadInputRef}
                   type="file"
                   onChange={onImageChange}
                 />
