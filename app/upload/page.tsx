@@ -61,7 +61,16 @@ export default function UploadPhoto() {
           {image ? (
             <img src={image} alt='user image' />
           ) : (
-            <p className="text-center text-lg">Add a photo of the style you love. We&apos;ll help you add it to your wardrobe</p>
+            <div>
+              <div className="flex justify-center items-center gap-4 mb-4 opacity-10">
+                <Camera size={48} />
+                <svg width="35" height="121" viewBox="0 0 35 121" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1.5 120.5L33.5 0.5" stroke="#090909" stroke-width="3"/>
+                </svg>
+                <FileEarmark size={48} />
+              </div>
+              <p className="text-center text-lg">Add a photo of the style you love. We&apos;ll help you add it to your wardrobe</p>
+            </div>
           )}
         </div>
         <div className="w-full">

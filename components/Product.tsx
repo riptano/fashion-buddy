@@ -18,19 +18,23 @@ const Product = ({ item }: Props): JSX.Element => {
 
   return (
     <div className="flex w-full pt-2">
-      <Image className="mr-2" src={item.product_images} alt={item.product_name} height={125} width={125} />
+      <Image className="mr-2" src={item.product_images} alt={item.product_name} height={120} width={120} />
       <div className="flex flex-col flex-1 justify-between p-4">
-        <h5 className="text-base font-semibold">{formatTitle(item.product_name)}</h5>
-        <p className="text-sm">{item.details}</p>
-        <p className="text-lg font-bold">${item.price}</p>
-        <div className="flex justify-between text-xs">
-          <span className="p-2 rounded-full bg-white">{ Math.round(item.$similarity * 1000)/10 }% Match</span>
-          <Link href={item.link} rel="noopener noreferrer" target="_blank">
-            <button className="slime-background flex items-center p-2 gap-2 rounded-full">
-              <Cart />
-              Buy
-            </button>
-          </Link>
+        <div>
+          <h5 className="text-base font-semibold truncate mb-1">{formatTitle(item.product_name)}</h5>
+          <p className="text-sm truncate-desc">{item.details}</p>
+        </div>
+        <div>
+          <p className="text-lg font-bold mb-1">${item.price}</p>
+          <div className="flex justify-between text-xs">
+            <span className="p-2 rounded-full bg-white">{ Math.round(item.$similarity * 1000)/10 }% Match</span>
+            <Link href={item.link} rel="noopener noreferrer" target="_blank">
+              <button className="slime-background flex items-center p-2 gap-2 rounded-full">
+                <Cart />
+                Buy
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
