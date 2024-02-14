@@ -6,7 +6,8 @@ import { useImage, useProcessedImage } from "@/components/ImageContext";
 import { createReadStream } from "fs";
 
 export default function UploadPhoto() {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const uploadInputRef = useRef<HTMLInputElement>(null);
 
   const [image, setImage] = useImage();
   const [, setProcessedImage] = useProcessedImage();
@@ -34,10 +35,16 @@ export default function UploadPhoto() {
   };
 
   const handleUploadClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+    if (uploadInputRef.current) {
+      uploadInputRef.current.click();
     }
   };
+
+  const handleTakePhotoClick = () => {
+    if (photoInputRef.current) {
+      photoInputRef.current.click();
+    }
+  }
 
   const handleRefreshClick = () => {
     setImage('');
@@ -54,7 +61,16 @@ export default function UploadPhoto() {
           {image ? (
             <img src={image} alt='user image' />
           ) : (
-            <p className="text-center text-lg">Add a photo of the style you love. We&apos;ll help you add it to your wardrobe</p>
+            <div>
+              <div className="flex justify-center items-center gap-4 mb-4 opacity-10">
+                <Camera size={48} />
+                <svg width="35" height="121" viewBox="0 0 35 121" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1.5 120.5L33.5 0.5" stroke="#090909" stroke-width="3"/>
+                </svg>
+                <FileEarmark size={48} />
+              </div>
+              <p className="text-center text-lg">Add a photo of the style you love. We&apos;ll help you add it to your wardrobe</p>
+            </div>
           )}
         </div>
         <div className="w-full">
@@ -82,13 +98,14 @@ export default function UploadPhoto() {
                   accept="image/*"
                   capture="environment"
                   onChange={onImageChange}
+                  ref={photoInputRef}
                   id="cameraInput"
                   name="picture"
                 />
                   <label htmlFor="cameraInput">
                     <button
                       className="flex items-center justify-center gap-2 w-full rounded-full p-4 text-lg font-semibold dark-background"
-                      onClick={handleUploadClick}
+                      onClick={handleTakePhotoClick}
                       type="button"
                     >
                       <Camera />
@@ -101,7 +118,7 @@ export default function UploadPhoto() {
                   className="hidden"
                   id="uploadInput"
                   accept="image/*"
-                  ref={fileInputRef}
+                  ref={uploadInputRef}
                   type="file"
                   onChange={onImageChange}
                 />

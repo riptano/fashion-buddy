@@ -49,7 +49,7 @@ export default function RecommendedProducts() {
   }, []);
 
   return (
-    <section className="tan-background h-full">
+    <section className="cream-background h-full">
       {loading ? (
         <div className="flex justify-center items-center h-full">
           <Image src={loadingGif} alt="loading" width={80} height={80} />
