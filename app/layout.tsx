@@ -17,8 +17,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${syne.className} w-full h-screen flex items-center justify-center`}>
-        <main className="md:w-[750px] w-full md:h-[1000px] h-screen">
+      <body className={`${syne.className} w-full h-dvh flex items-center justify-center`}>
+        <main className="md:w-[750px] w-full md:h-[1000px] h-full">
           <ImageProvider>
             {children}
           </ImageProvider>
