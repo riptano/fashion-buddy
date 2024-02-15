@@ -40,8 +40,37 @@ export async function POST(req: Request) {
 
         const collection = await db.collection("fashion_buddy");
 
-        // search for similar items on Astra
-        // const metadataFilter = {category: 'TOPS'}
+        let filter = {};
+        let categoryFilter;
+        let genderFilter;
+    
+        if (data.filters.categories.length > 0) {
+            categoryFilter = {
+                $or: data.filters.categories.map(category => ({ category: category }))
+            };
+        }
+        
+        if (data.filters.genders.length > 0) {
+            if (data.filters.genders.length > 1) {
+                genderFilter = {
+                    $or: data.filters.genders.map(gender => ({ gender: gender }))
+                };
+            } else {
+                genderFilter = { gender: data.filters.genders[0] };
+            }
+        }
+
+        if (categoryFilter && genderFilter) {
+            filter = { 
+                $and: [
+                    categoryFilter,
+                    genderFilter
+                 ]
+            }
+        } else if (categoryFilter || genderFilter) {
+            filter = categoryFilter ? categoryFilter : genderFilter;
+        }
+
         const options: FindOptions = {
             sort: {
                 "$vector": vector
@@ -53,7 +82,7 @@ export async function POST(req: Request) {
             }
         };
 
-        const cursor = collection.find({}, options);
+        const cursor = collection.find(filter, options);
 
         const docs = await cursor.toArray();
 

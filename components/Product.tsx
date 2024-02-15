@@ -17,9 +17,9 @@ const Product = ({ item }: Props): JSX.Element => {
   }
 
   return (
-    <div className="flex w-full pt-2">
+    <div className="flex w-full max-w-full pt-2">
       <Image className="mr-2" src={item.product_images} alt={item.product_name} height={120} width={120} />
-      <div className="flex flex-col flex-1 justify-between p-4">
+      <div className="flex flex-col justify-between p-4 overflow-x-hidden">
         <div>
           <h5 className="text-base font-semibold truncate mb-1">{formatTitle(item.product_name)}</h5>
           <p className="text-sm truncate-desc">{item.details}</p>
