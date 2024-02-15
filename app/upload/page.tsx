@@ -75,11 +75,11 @@ export default function UploadPhoto() {
         </div>
         <div className="w-full">
           {image ? (
-            <div className="flex justify-between gap-3">
+            <div className="flex justify-between gap-4">
               <Link className="grow" href="/recommended-products">
                 <button className="slime-background flex items-center justify-center gap-2 rounded-full w-full p-4 text-lg font-semibold" >
                   <Stars />
-                    Recommended products
+                    Find products
                 </button>
               </Link>
               <button
