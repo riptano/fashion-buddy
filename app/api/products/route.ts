@@ -40,6 +40,7 @@ export async function POST(req: Request) {
 
         const collection = await db.collection("fashion_buddy");
 
+        // Apply user selected filters
         let filter = {};
         let categoryFilter;
         let genderFilter;
@@ -60,6 +61,7 @@ export async function POST(req: Request) {
             }
         }
 
+        // use $and if necessary
         if (categoryFilter && genderFilter) {
             filter = { 
                 $and: [
