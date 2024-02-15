@@ -16,9 +16,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${syne.className} w-full h-screen flex items-center justify-center`}>
-        <main className="md:w-[750px] w-full md:h-[1000px] h-screen">
+    <html lang="en" className="h-full">
+      <body className={`${syne.className} w-full h-full flex items-center justify-center`}>
+        <main className="md:w-[750px] w-full md:h-[1000px] h-full">
           <ImageProvider>
             {children}
           </ImageProvider>

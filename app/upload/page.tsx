@@ -79,7 +79,7 @@ export default function UploadPhoto() {
               <Link className="grow" href="/recommended-products">
                 <button className="slime-background flex items-center justify-center gap-2 rounded-full w-full p-4 text-lg font-semibold" >
                   <Stars />
-                    Recommended products
+                    Find products
                 </button>
               </Link>
               <button

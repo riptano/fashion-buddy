@@ -17,7 +17,7 @@ const FilterDialog = ({ isOpen, onClose, filters, setFilters, onApply }: Props) 
 
   return (
     <div className="fixed inset-0 bg-opacity-75 flex items-center justify-center z-50">
-      <div className="cream-background flex flex-col md:w-[750px] w-full md:h-[1000px] h-screen p-6 rounded shadow-lg overflow-auto">
+      <div className="cream-background flex flex-col md:w-[750px] w-full md:h-[1000px] h-full p-6 rounded shadow-lg overflow-auto">
         <div className='pb-6 flex justify-end'>
             <button
               onClick={onClose}
