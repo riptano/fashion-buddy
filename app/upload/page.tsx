@@ -20,10 +20,10 @@ export default function UploadPhoto() {
 
     var reader = new FileReader();
     reader.onload = function () {
-      var base64data = reader.result as string;
-      const processedData = base64data.split(",")[1];
+      var base64Data = reader.result as string;
+      // const processedData = base64data.split(",")[1];
       setProcessedImage({
-        base64Data: processedData,
+        base64Data,
         fileType: file.type,
       });
     };
