@@ -1,96 +1,150 @@
-import { AstraDB } from "@datastax/astra-db-ts";
-import { FindOptions } from "@datastax/astra-db-ts/dist/collections";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Document } from "@langchain/core/documents";
+import { HumanMessage } from "@langchain/core/messages";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { NextResponse } from "next/server";
+import { 
+    RunnableLambda,
+    RunnableSequence
+  } from "@langchain/core/runnables";
+import { Filters, ProductType } from "@/utils/types";
+import {
+    AstraDBVectorStore,
+    AstraLibArgs,
+  } from "@langchain/community/vectorstores/astradb";
 
 
 // Environment variables
 const { ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT, GOOGLE_API_KEY } =
   process.env;
 
-// Connect to Astra
-const db = new AstraDB(ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT);
-
-// Connect to Google GenAI
-const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY || "");
-const gemini_model = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
-const embeddings_model = genAI.getGenerativeModel({ model: "embedding-001" });
+const PROMPT = 'describe the clothing items worn in this photo';
 
 export async function POST(req: Request) {
     try {
         const data = await req.json();
 
-        // Prompt that gets sent to the model
-        const prompt = 'describe the clothing items worn in this photo';
-        // Image part that gets sent to the model
-        const imagePart = {
-            inlineData: {
-                data: data.imageBase64,
-                mimeType: data.fileType,
-            },
-        };
-
-        const geminiResponse = await gemini_model.generateContent([prompt, imagePart]);
-
-        // Create embeddings of product description 
-        const searchPrompt = geminiResponse.response.text();
-        const result = await embeddings_model.embedContent(searchPrompt);
-        const embedding = result.embedding;
-        const vector = embedding.values;
-
-        const collection = await db.collection("fashion_buddy");
-
-        // Apply user selected filters
-        let filter = {};
-        let categoryFilter;
-        let genderFilter;
-    
-        if (data.filters.categories.length > 0) {
-            categoryFilter = {
-                $or: data.filters.categories.map(category => ({ category: category }))
-            };
-        }
+        // Initialize chat and embeddings models
+        const gemini_model = new ChatGoogleGenerativeAI({
+            apiKey: GOOGLE_API_KEY,
+            modelName: "gemini-pro-vision",
+            streaming: false,
+        })
         
-        if (data.filters.genders.length > 0) {
-            if (data.filters.genders.length > 1) {
-                genderFilter = {
-                    $or: data.filters.genders.map(gender => ({ gender: gender }))
-                };
-            } else {
-                genderFilter = { gender: data.filters.genders[0] };
-            }
-        }
+        const embeddings_model = new GoogleGenerativeAIEmbeddings({
+            apiKey: GOOGLE_API_KEY,
+            modelName: "embedding-001",
+        });
 
-        // use $and if necessary
-        if (categoryFilter && genderFilter) {
-            filter = { 
-                $and: [
-                    categoryFilter,
-                    genderFilter
-                 ]
-            }
-        } else if (categoryFilter || genderFilter) {
-            filter = categoryFilter ? categoryFilter : genderFilter;
-        }
 
-        const options: FindOptions = {
-            sort: {
-                "$vector": vector
+        // Create astra config and initailize vector store
+        const astraConfig: AstraLibArgs = {
+            token: ASTRA_DB_APPLICATION_TOKEN,
+            endpoint: ASTRA_DB_ENDPOINT,
+            collection: "fashion_buddy",
+            collectionOptions: {
+                vector: {
+                    dimension: 768,
+                    metric: "cosine",
+                }
             },
-            limit: 10,
-            includeSimilarity: true,
-            projection: {
-                '$vector': 0
-            }
+            contentKey: "details",
         };
 
-        const cursor = collection.find(filter, options);
+        const astra = new AstraDBVectorStore(embeddings_model, astraConfig);
+        await astra.initialize();
 
-        const docs = await cursor.toArray();
+        // Create our retriever chain
+        const astraRetrieverChain = RunnableSequence.from([
+            RunnableLambda.from(
+                (input: string) => embeddings_model.embedQuery(input),
+            ).withConfig({ runName: "GetEmbedding" }),
+            RunnableLambda.from(
+                (input: number[]) => astra.similaritySearchVectorWithScore(input, 10, getFilters(data.filters))
+            ).withConfig({ runName: "GetProductsFromAstra" }),
+            RunnableLambda.from(
+                (input: [Document, number][]) => mapDocsToProducts(input)
+            ).withConfig({ runName: "MapDocsToProducts" }),
+        ]).withConfig({ runName: "AstraRetrieverChain" });
 
-        return NextResponse.json({ message: geminiResponse.response.text(), products: docs }, { status: 200 });
+        // Create our core chain
+        const chain = RunnableSequence.from([
+            gemini_model,
+            new StringOutputParser(),
+            astraRetrieverChain,
+        ])
+
+        // Creates the initial message containing the image and prompt
+        const message = [
+            new HumanMessage({
+                content: [
+                    {
+                        type: "text",
+                        text: PROMPT, 
+                    },
+                    {
+                        type: "image_url",
+                        image_url: data.imageBase64,
+                    },
+                ]
+            })
+        ];
+
+        // Invoke the chain using the multi-modal message
+        const products = await chain.invoke(message);   
+
+        return NextResponse.json({ products }, { status: 200 });
     } catch (error) {
         console.error(error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
+}
+
+const mapDocsToProducts = (docs: [Document, number][]): ProductType[] => {
+    return docs.map(doc => {
+        const { $vector, ...cleanMetadata } = doc[0].metadata;
+        return {
+            ...cleanMetadata,
+            details: doc[0].pageContent,
+            $similarity: doc[1],
+        } as ProductType;
+    });
+}
+
+
+// Create a filter object
+const getFilters = (filters: Filters): Record<string, any> => {
+    let filter = {};
+    let categoryFilter;
+    let genderFilter;
+
+    if (filters.categories.length > 0) {
+        categoryFilter = {
+            $or: filters.categories.map(category => ({ category: category }))
+        };
+    }
+    
+    if (filters.genders.length > 0) {
+        if (filters.genders.length > 1) {
+            genderFilter = {
+                $or: filters.genders.map(gender => ({ gender: gender }))
+            };
+        } else {
+            genderFilter = { gender: filters.genders[0] };
+        }
+    }
+
+    // use $and if necessary
+    if (categoryFilter && genderFilter) {
+        filter = { 
+            $and: [
+                categoryFilter,
+                genderFilter
+                ]
+        }
+    } else if (categoryFilter || genderFilter) {
+        filter = categoryFilter ? categoryFilter : genderFilter;
+    }
+
+    return filter;
 }
