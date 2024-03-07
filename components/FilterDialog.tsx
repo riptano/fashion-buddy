@@ -28,10 +28,11 @@ const FilterDialog = ({ isOpen, onClose, filters, setFilters, onApply }: Props) 
           </div>
         <div className="grow">
           <FilterSelector
-            section="genders"
+            section="gender"
             sectionOptions={GENDERS}
-            selectedOptions={filters.genders}
+            selectedOptions={filters.gender}
             setFilters={setFilters}
+            isSingleSelect
           />
           <FilterSelector
             section="categories"
@@ -44,7 +45,7 @@ const FilterDialog = ({ isOpen, onClose, filters, setFilters, onApply }: Props) 
           <button
             className="flex items-center justify-center gap-2 w-full rounded-full p-4 text-lg font-semibold bg-white mb-2"
             onClick={() => setFilters({
-              genders: [],
+              gender: ["all"],
               categories: [],
             })}
             type="button"

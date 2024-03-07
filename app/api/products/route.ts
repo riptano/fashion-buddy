@@ -124,14 +124,8 @@ const getFilters = (filters: Filters): Record<string, any> => {
         };
     }
     
-    if (filters.genders.length > 0) {
-        if (filters.genders.length > 1) {
-            genderFilter = {
-                $or: filters.genders.map(gender => ({ gender: gender }))
-            };
-        } else {
-            genderFilter = { gender: filters.genders[0] };
-        }
+    if (filters.gender.length && filters.gender[0] !== "all") {
+        genderFilter = { gender: filters.gender[0] };
     }
 
     // use $and if necessary
