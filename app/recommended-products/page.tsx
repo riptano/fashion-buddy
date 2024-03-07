@@ -19,7 +19,7 @@ export default function RecommendedProducts() {
   const [filterDialogOpen, setFilterDialogOpen] = useState<boolean>(false);
   const [filters, setFilters] = useState<Filters>({
     categories: [],
-    genders: [],
+    gender: ["all"],
   });
 
   const getProducts = async () => {

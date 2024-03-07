@@ -17,5 +17,5 @@ type GenderType = typeof GENDERS[number];
 
 export interface Filters {
   categories: CategoryType[];
-  genders: GenderType[];
+  gender: GenderType[];
 }

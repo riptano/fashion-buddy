@@ -8,4 +8,4 @@ export const CATEGORIES = [
   "ACTIVEWEAR",
 ];
 
-export const GENDERS = ["men", "women"];
+export const GENDERS = ["all", "men", "women"];
