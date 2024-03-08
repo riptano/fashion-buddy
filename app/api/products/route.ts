@@ -12,13 +12,12 @@ import {
     AstraDBVectorStore,
     AstraLibArgs,
   } from "@langchain/community/vectorstores/astradb";
+import { CATEGORIES } from "@/utils/consts";
 
 
 // Environment variables
 const { ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT, GOOGLE_API_KEY } =
   process.env;
-
-const PROMPT = 'describe the clothing items worn in this photo';
 
 export async function POST(req: Request) {
     try {
@@ -80,7 +79,7 @@ export async function POST(req: Request) {
                 content: [
                     {
                         type: "text",
-                        text: PROMPT, 
+                        text: getPrompt(data.filters), 
                     },
                     {
                         type: "image_url",
@@ -109,6 +108,13 @@ const mapDocsToProducts = (docs: [Document, number][]): ProductType[] => {
             $similarity: doc[1],
         } as ProductType;
     });
+}
+
+const getPrompt = (filters: Filters): string => {
+    const categories = filters.categories.length > 0 ? filters.categories : CATEGORIES;
+
+    return `Give a short description of each clothing item worn in this photo that fall into one the following categories: 
+        ${categories.join(", ")}.`;
 }
 
 
