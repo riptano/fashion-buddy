@@ -2,6 +2,7 @@ import { Document } from "@langchain/core/documents";
 import { HumanMessage } from "@langchain/core/messages";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { GoogleVertexAIMultimodalEmbeddings } from "langchain/experimental/multimodal_embeddings/googlevertexai";
 import { NextResponse } from "next/server";
 import { 
     RunnableLambda,
@@ -30,6 +31,8 @@ export async function POST(req: Request) {
             modelName: "gemini-pro-vision",
             streaming: false,
         })
+
+        const vertex = new GoogleVertexAIMultimodalEmbeddings();
         
         const embeddings_model = new GoogleGenerativeAIEmbeddings({
             apiKey: GOOGLE_API_KEY,
@@ -41,10 +44,10 @@ export async function POST(req: Request) {
         const astraConfig: AstraLibArgs = {
             token: ASTRA_DB_APPLICATION_TOKEN,
             endpoint: ASTRA_DB_ENDPOINT,
-            collection: "fashion_buddy",
+            collection: "shopping_buddy_demo",
             collectionOptions: {
                 vector: {
-                    dimension: 768,
+                    dimension: 1408,
                     metric: "cosine",
                 }
             },
@@ -66,6 +69,18 @@ export async function POST(req: Request) {
                 (input: [Document, number][]) => mapDocsToProducts(input)
             ).withConfig({ runName: "MapDocsToProducts" }),
         ]).withConfig({ runName: "AstraRetrieverChain" });
+
+        const astraVertexChain = RunnableSequence.from([
+            RunnableLambda.from(
+                (input: string) => vertex.embedImageQuery(input)
+            ).withConfig({ runName: "GetEmbedding" }),
+            RunnableLambda.from(
+                (input: number[]) => astra.similaritySearchVectorWithScore(input, 10, getFilters(data.filters))
+            ).withConfig({ runName: "GetProductsFromAstra" }),
+            RunnableLambda.from(
+                (input: [Document, number][]) => mapDocsToProducts(input)
+            ).withConfig({ runName: "MapDocsToProducts" }),
+        ]).withConfig({ runName: "AstraVertexChain" });
 
         // Create our core chain
         const chain = RunnableSequence.from([
@@ -90,8 +105,28 @@ export async function POST(req: Request) {
             })
         ];
 
+        vertex.embedImageQuery
+
+        const base64Data = data.imageBase64.split(';base64,').pop(); // Extract Base64 encoded data
+
+        const imageBuffer = Buffer.from(base64Data, 'base64');  
+
+        const vertexChain = RunnableSequence.from([
+            RunnableLambda.from(
+                (input: Buffer) => vertex.embedImageQuery(input),
+            ).withConfig({ runName: "GetEmbedding" }),
+            RunnableLambda.from(
+                (input: number[]) => astra.similaritySearchVectorWithScore(input, 10, getFilters(data.filters))
+            ).withConfig({ runName: "GetProductsFromAstra" }),
+            RunnableLambda.from(
+                (input: [Document, number][]) => mapDocsToProducts(input)
+            ).withConfig({ runName: "MapDocsToProducts" }),
+        ]).withConfig({ runName: "VertexAstraRetrieverChain" });
+
         // Invoke the chain using the multi-modal message
-        const products = await chain.invoke(message);   
+        // const products = await chain.invoke(message);   
+
+        const products = await vertexChain.invoke(imageBuffer);
 
         return NextResponse.json({ products }, { status: 200 });
     } catch (error) {
