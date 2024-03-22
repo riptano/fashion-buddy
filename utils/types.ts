@@ -1,5 +1,20 @@
 import { CATEGORIES, GENDERS } from "./consts";
 
+export interface OriginalProduct {
+  item_number: string;
+  product_name: string;
+  product_images: string;
+  price: number;
+  details: string;
+  category: string;
+  link: string;
+  gender: string;
+}
+
+export interface EnhancedProduct extends OriginalProduct {
+  gemini_description: string;
+}
+
 export interface ProductType {
   _id: string;
   product_name: string;
