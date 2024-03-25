@@ -1,12 +1,11 @@
 import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { HumanMessage } from "@langchain/core/messages";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnableSequence } from "@langchain/core/runnables";
-import { EnhancedProduct } from "@/utils/types";
+import { OriginalProduct } from "@/utils/types";
 import { unzipAndReadCSVs } from "./combineCSVs";
-import { AstraDB } from "@datastax/astra-db-ts";
+import { AstraDB, Collection } from "@datastax/astra-db-ts";
 import 'dotenv/config'
-import { HumanMessage } from "@langchain/core/messages";
-
 
 const { ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT, GOOGLE_API_KEY } =
   process.env;
@@ -38,37 +37,100 @@ const loadData = async () => {
       metric: "cosine",
     }
   });
+
   const collection = await astraDB.collection("fashion_buddy");
 
+  let insertCount = 0;
+  let failCount = 0;
+
+  const results = await loadWithConcurrency(
+    products.slice(0, 20),
+    10,
+    collection,
+    descriptionChain,
+    embeddings_model
+  );
+
+  results.forEach(result => {
+    if (result.success) {
+      insertCount++;
+    } else {
+      failCount++;
+    }
+  });
+
+  console.log(`Collection load complete. Inserted: ${insertCount}, Failed: ${failCount}`);
+}
+
+const loadWithConcurrency = async (
+  products: OriginalProduct[],
+  limit: number,
+  collection: Collection,
+  descriptionChain: RunnableSequence,
+  embeddings_model: GoogleGenerativeAIEmbeddings
+) => {
+  let active = [];
+  let results = [];
+
   for (const product of products) {
-    let imageBase64 = '';
-    try {
-      imageBase64 = await convertImageToBase64(product.product_images);
-    } catch (error) {
-      console.error(`Error converting image ${product.product_images}`);
-      continue;
+    const promise = processProduct(
+      product,
+      collection,
+      descriptionChain,
+      embeddings_model
+    ).then(result => {
+      // Remove the promise from the active array when it resolves
+      active = active.filter(p => p !== promise);
+      return result;
+    });
+    active.push(promise);
+
+    // If we've reached the concurrency limit, wait for one promise to finish
+    if (active.length >= limit) {
+      await Promise.race(active);
     }
-    if (!imageBase64) {
-      console.error(`Error converting image for product: ${product.product_name} to base64`);
-      console.log(product.product_images)
-      continue;
-    }
-    const message = [
-      new HumanMessage({
-          content: [
-              {
-                  type: "text",
-                  text: `Give a short description of the product following product in the image provided
-                  Product Name: ${product.product_name}
-                  Product Category: ${product.category}`,
-              },
-              {
-                  type: "image_url",
-                  image_url: `data:image/jpeg;base64,${imageBase64}`,
-              },
-          ]
-      })
+
+    results.push(promise);
+  }
+
+  return Promise.all(results);
+} 
+
+const processProduct = async (
+  product: OriginalProduct,
+  collection: Collection,
+  descriptionChain: RunnableSequence,
+  embeddings_model: GoogleGenerativeAIEmbeddings
+) => {
+  let imageBase64 = '';
+  try {
+    imageBase64 = await convertImageToBase64(product.product_images);
+  } catch (error) {
+    console.error(`Error converting image ${product.product_images}`);
+    return { success: false };
+  }
+  if (!imageBase64) {
+    console.error(`Error converting image for product: ${product.product_name} to base64`);
+    console.log(product.product_images)
+    return { success: false };
+  }
+  const message = [
+    new HumanMessage({
+        content: [
+            {
+                type: "text",
+                text: `Give a short description of the product following product in the image provided
+                Product Name: ${product.product_name}
+                Product Category: ${product.category}`,
+            },
+            {
+                type: "image_url",
+                image_url: `data:image/jpeg;base64,${imageBase64}`,
+            },
+        ]
+    })
   ];
+  try {
     const gemini_description = await descriptionChain.invoke(message);
     const embedding = await embeddings_model.embedQuery(gemini_description);
     await collection.insertOne({
@@ -78,8 +140,13 @@ const loadData = async () => {
     })
 
     console.log(`Inserted product: ${product.product_name}`)
+    return { success: true };
+  } catch (error) {
+    console.error(`Error inserting product: ${product.product_name}`, error);
+    return { success: false };
   }
 }
+
 
 const convertImageToBase64 = async (url: string): Promise<string> => {
   try {

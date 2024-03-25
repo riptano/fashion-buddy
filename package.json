@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "load": "ts-node scripts/loadData"
   },
   "dependencies": {
     "@datastax/astra-db-ts": "^0.1.4",

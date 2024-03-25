@@ -98,6 +98,3 @@ export const unzipAndReadCSVs = async (zipFilePath: string): Promise<OriginalPro
     throw error;
   }
 };
-
-// Usage
-unzipAndReadCSVs('scripts/archive.zip');
