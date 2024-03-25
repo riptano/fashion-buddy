@@ -1,5 +1,6 @@
 import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { HumanMessage } from "@langchain/core/messages";
+import { PromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { OriginalProduct } from "@/utils/types";
@@ -11,6 +12,15 @@ const { ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT, GOOGLE_API_KEY } =
   process.env;
 
 const astraDB = new AstraDB(ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT);
+
+const prompt = PromptTemplate.fromTemplate(`Idenity the following product in the image provided.
+Product Name: {name}
+Product Category: {category}
+Product Description: {description}
+
+Return an enhanced description of the product based on the image for better search results.
+Do not include any specific details that can not be confirmed from the image or provided description such as the quality of materials, other color options, or exact measurements.
+`);
 
 const loadData = async () => {
   const products = await unzipAndReadCSVs('scripts/archive.zip');
@@ -44,7 +54,7 @@ const loadData = async () => {
   let failCount = 0;
 
   const results = await loadWithConcurrency(
-    products.slice(0, 20),
+    products,
     10,
     collection,
     descriptionChain,
@@ -119,9 +129,11 @@ const processProduct = async (
         content: [
             {
                 type: "text",
-                text: `Give a short description of the product following product in the image provided
-                Product Name: ${product.product_name}
-                Product Category: ${product.category}`,
+                text: await prompt.format({
+                  name: product.product_name,
+                  category: product.category,
+                  description: product.details,
+                }),
             },
             {
                 type: "image_url",

@@ -25,7 +25,7 @@ const getNewCategory = (category: string): string => {
 
 const convertToDollars = (rupeesString: string): number => {
   const rupees = parseFloat(rupeesString.replace('₹', '').replace(/,/g, ''));
-  const rate = 0.11;
+  const rate = 0.011;
   const dollars = rupees * rate;
   return parseFloat(dollars.toFixed(2));
 }

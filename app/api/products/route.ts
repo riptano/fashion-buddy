@@ -111,12 +111,11 @@ const mapDocsToProducts = (docs: [Document, number][]): ProductType[] => {
 }
 
 const getPrompt = (filters: Filters): string => {
-    const categories = filters.categories.length > 0 ? filters.categories : CATEGORIES;
+    const categories = filters.categories.length > 0 ? filters.categories : '';
 
-    return `Give a short description of each clothing item worn in this photo that fall into one the following categories: 
-        ${categories.join(", ")}.`;
+    return `Give a description of each clothing item worn in this photo${categories ? ` that fall into one the following categories: 
+        ${categories.join(", ")}`: ''}`;
 }
-
 
 // Create a filter object
 const getFilters = (filters: Filters): Record<string, any> => {
