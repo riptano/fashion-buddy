@@ -1,7 +1,7 @@
 import { CATEGORIES, GENDERS } from "./consts";
 
-export interface ProductType {
-  _id: string;
+export interface OriginalProduct {
+  item_number: string;
   product_name: string;
   product_images: string;
   price: number;
@@ -9,6 +9,19 @@ export interface ProductType {
   category: string;
   link: string;
   gender: string;
+}
+
+export interface ProductType {
+  _id: string;
+  item_number: string;
+  product_name: string;
+  product_images: string;
+  price: number;
+  details: string;
+  category: string;
+  link: string;
+  gender: string;
+  gemini_description: string;
   $similarity: number;
 }
 
