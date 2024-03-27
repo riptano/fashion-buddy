@@ -53,7 +53,15 @@ export const unzipAndReadCSVs = async (zipFilePath: string): Promise<OriginalPro
         const [ gender, _, category] = cleanName.split('/');
 
         const stream = parse({
-            headers: headers => headers.map(h => h === '' ? 'item_number' : h.toLowerCase().trim()),
+          headers: headers => headers.map(h => {
+            if (h === '') return 'item_number';
+            
+            const lowerH = h.toLowerCase().trim();
+
+            if (lowerH === 'product_image') return 'product_images';
+            
+            return lowerH;
+          })
           })
           .on('error', error => {
             console.error(error);
