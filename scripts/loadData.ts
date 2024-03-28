@@ -144,7 +144,7 @@ const processProduct = async (
   ];
   try {
     const gemini_description = await descriptionChain.invoke(message);
-    const embedding = await embeddings_model.embedQuery(gemini_description);
+    const embedding = await embeddings_model.embedQuery(`${product.product_name} ${gemini_description}`);
     await collection.insertOne({
       ...product,
       gemini_description,
