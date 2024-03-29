@@ -1,3 +1,5 @@
+
+import { HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import { Document } from "@langchain/core/documents";
 import { HumanMessage } from "@langchain/core/messages";
 import { StringOutputParser } from "@langchain/core/output_parsers";
@@ -28,6 +30,10 @@ export async function POST(req: Request) {
             apiKey: GOOGLE_API_KEY,
             modelName: "gemini-pro-vision",
             streaming: false,
+            safetySettings: [{
+                category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+                threshold: HarmBlockThreshold.BLOCK_NONE,
+              }]
         })
         
         const embeddings_model = new GoogleGenerativeAIEmbeddings({

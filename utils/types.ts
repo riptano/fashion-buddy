@@ -21,7 +21,6 @@ export interface ProductType {
   category: string;
   link: string;
   gender: string;
-  gemini_description: string;
   $similarity: number;
 }
 

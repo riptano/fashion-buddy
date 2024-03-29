@@ -1,4 +1,6 @@
 import { ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { BaseLanguageModelInput } from "@langchain/core/dist/language_models/base";
 import { HumanMessage } from "@langchain/core/messages";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
@@ -6,6 +8,7 @@ import { RunnableSequence } from "@langchain/core/runnables";
 import { OriginalProduct } from "@/utils/types";
 import { unzipAndReadCSVs } from "./combineCSVs";
 import { AstraDB, Collection } from "@datastax/astra-db-ts";
+
 import 'dotenv/config'
 
 const { ASTRA_DB_APPLICATION_TOKEN, ASTRA_DB_ENDPOINT, GOOGLE_API_KEY } =
@@ -29,6 +32,10 @@ const loadData = async () => {
     apiKey: GOOGLE_API_KEY,
     modelName: "gemini-pro-vision",
     streaming: false,
+    safetySettings: [{
+      category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+      threshold: HarmBlockThreshold.BLOCK_NONE,
+    }]
   });
 
   const embeddings_model = new GoogleGenerativeAIEmbeddings({
@@ -76,7 +83,7 @@ const loadWithConcurrency = async (
   products: OriginalProduct[],
   limit: number,
   collection: Collection,
-  descriptionChain: RunnableSequence,
+  descriptionChain: RunnableSequence<BaseLanguageModelInput, string>,
   embeddings_model: GoogleGenerativeAIEmbeddings
 ) => {
   let active = [];
@@ -109,7 +116,7 @@ const loadWithConcurrency = async (
 const processProduct = async (
   product: OriginalProduct,
   collection: Collection,
-  descriptionChain: RunnableSequence,
+  descriptionChain: RunnableSequence<BaseLanguageModelInput, string>,
   embeddings_model: GoogleGenerativeAIEmbeddings
 ) => {
   let imageBase64 = '';
@@ -142,12 +149,20 @@ const processProduct = async (
         ]
     })
   ];
+
+  let details = product.details;
   try {
-    const gemini_description = await descriptionChain.invoke(message);
-    const embedding = await embeddings_model.embedQuery(`${product.product_name} ${gemini_description}`);
+    details = await descriptionChain.invoke(message);
+  } catch (error) {
+    console.error(`Error getting gemini description for ${product.product_name}`, error);
+    return { success: false };
+  }
+
+  try {
+    const embedding = await embeddings_model.embedQuery(`${product.product_name} ${details ? details : product.details}`);
     await collection.insertOne({
       ...product,
-      gemini_description,
+      details,
       $vector: embedding,
     })
 
