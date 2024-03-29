@@ -53,31 +53,31 @@ export const unzipAndReadCSVs = async (zipFilePath: string): Promise<OriginalPro
         const [ gender, _, category] = cleanName.split('/');
 
         const stream = parse({
-          headers: headers => headers.map(h => {
-            if (h === '') return 'item_number';
-            
-            const lowerH = h.toLowerCase().trim();
+            headers: headers => headers.map(h => {
+              if (h === '') return 'item_number';
+              
+              const lowerH = h.toLowerCase().trim();
 
-            if (lowerH === 'product_image') return 'product_images';
-            
-            return lowerH;
-          })
+              if (lowerH === 'product_image') return 'product_images';
+              
+              return lowerH;
+            })
           })
           .on('error', error => {
             console.error(error);
             reject(error);
           })
           .on('data', row => {
-            // only add products that have images
-            if (row.product_images) {
-              csvData.push({
-                ...row,
-                gender,
-                category: getNewCategory(category),
-                price: convertToDollars(row.price),
-                product_images: extractImgUrls(row.product_images),
-              });
-            }
+              if (row.product_images) {
+                csvData.push({
+                  ...row,
+                  gender,
+                  category: getNewCategory(category),
+                  price: convertToDollars(row.price),
+                  product_images: extractImgUrls(row.product_images),
+                });
+              }
+            // }
           })
           .on('end', (rowCount: number) => {
             console.log(`Parsed ${rowCount} rows in ${entry.entryName}`);
