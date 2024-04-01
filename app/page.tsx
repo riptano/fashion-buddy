@@ -1,32 +1,67 @@
+"use client";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "react-bootstrap-icons";
 import datastaxLogo from "../assets/datastax-logo.png";
-
+import UploadPhotoDialog from "./upload/page";
 
 export default function Home() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
 
   return (
-    <section className="clothing-background h-full">
-      <div className="flex flex-col h-full p-6">
-        <div className="grow flex flex-col justify-center">
-          <h1 className="text-6xl font-bold mb-6">Fashion, Meet AI.</h1>
-          <p className="text-xl">Say goodbye to wardrobe dilemmas and hello to effortless style.</p>
-        </div>
-        <div>
-          <div className="pb-6">
-            <span>Powered by</span>
-            <Image className="mt-2" src={datastaxLogo} alt="DataStax Logo" height={16} width={172} />
-          </div>
-
-          <Link href="/upload">
-            <button className="slime-background flex items-center justify-center gap-2 w-full rounded-full p-4 text-lg font-semibold">
-                Get started
-                <ArrowRight />
-            </button>
-          </Link>
+    <div className="flex min-h-screen cream-background">
+      {/* Left side */}
+      <div className="flex-1 bg-cover bg-center clothing-background">
+        {/* Logo and powered by text */}
+        <div className="p-10">
+          <h3 className="text-black">Powered by</h3>
+          <Image
+            className="mt-2"
+            src={datastaxLogo}
+            alt="DataStax Logo"
+            height={16}
+            width={172}
+          />
         </div>
       </div>
-    </section>
-  )
+
+      {/* Right side */}
+      <div className="flex-1 flex justify-center items-center">
+        {/* Content container */}
+        <div className="grid gap-6">
+          {/* Main heading */}
+          <p className="text-6xl font-bold">Fashion, Meet AI.</p>
+
+          {/* Subheading */}
+          <p className="text-xl max-w-xs">
+            Say goodbye to wardrobe dilemmas and hello to effortless style.
+          </p>
+
+          {/* "Get started" button */}
+          <button
+            className="slime-background flex items-center justify-center rounded-full text-lg font-semibold mt-6 w-full max-w-sm px-6 py-3"
+            onClick={handleOpenDialog}
+          >
+            Get started
+            <ArrowRight className="ml-2 text-xl" />
+          </button>
+
+          {/* Upload photo dialog */}
+          <UploadPhotoDialog
+            isOpen={isDialogOpen}
+            onClose={handleCloseDialog}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }
