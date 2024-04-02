@@ -52,9 +52,15 @@ export default function RecommendedProducts() {
     if (processedImage) {
       getProducts();
     } else {
-      router.push("/upload");
+      router.push("/");
     }
   }, []);
+
+  const formatTitle = (str: string) => {
+    return str.toLowerCase().replace(/\b\w/g, function (char) {
+      return char.toUpperCase();
+    });
+  };
 
   return (
     <>
@@ -67,11 +73,11 @@ export default function RecommendedProducts() {
           <div className="flex flex-col p-6 md:p-0 h-full">
             {/* Filter Results desktop */}
             <div className="hidden md:flex w-full">
-              <div className="absolute top-6 right-6">
-                <button
-                  className="flex gap-4 items-center justify-center rounded-full cream-background px-6 py-4"
-                  onClick={() => console.log("clicked")}
-                >
+              <div
+                className="absolute top-6 right-6"
+                onClick={() => console.log("clicked")}
+              >
+                <button className="flex gap-4 items-center justify-center rounded-full cream-background px-6 py-4">
                   <Image
                     className="rounded-full"
                     src={image}
@@ -87,12 +93,21 @@ export default function RecommendedProducts() {
               <div className="min-h-screen max-w-full">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
                   {items.map((item) => (
-                    <img
-                      key={item._id}
-                      src={item.product_images}
-                      alt={item.product_name}
-                      className="w-full h-auto"
-                    />
+                    <div key={item._id} className="w-full h-auto">
+                      <Image
+                        src={item.product_images}
+                        alt={item.product_name}
+                        width={600}
+                        height={400}
+                        objectFit="cover"
+                      />
+                      <div>
+                        <h5 className="text-base font-semibold truncate mb-1">
+                          {formatTitle(item.product_name)}
+                        </h5>
+                        <p className="text-sm truncate-desc">{item.details}</p>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
