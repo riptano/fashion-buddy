@@ -58,46 +58,80 @@ export default function RecommendedProducts() {
 
   return (
     <>
-      <section className="cream-background h-full">
+      <div className="cream-background h-screen">
         {loading ? (
-          <div className="flex justify-center items-center h-screen">
+          <div className="flex justify-center items-center h-full">
             <Image src={loadingGif} alt="loading" width={80} height={80} />
           </div>
         ) : (
-          <div className="flex flex-col p-6 h-full">
-            <div className="flex justify-between items-center pb-4 border-bottom">
-              <div className="flex gap-4 items-center">
-                <Image
-                  className="rounded-full"
-                  src={image}
-                  width={24}
-                  height={24}
-                  alt="user image"
-                />
-                <h3 className="text-lg">Results</h3>
+          <div className="flex flex-col p-6 md:p-0 h-full">
+            {/* Filter Results desktop */}
+            <div className="hidden md:flex z-50">
+              <div className="absolute top-6 right-6 ">
+                <button className="flex gap-4 items-center justify-center rounded-full cream-background px-6 py-4">
+                  <Image
+                    className="rounded-full"
+                    src={image}
+                    width={24}
+                    height={24}
+                    alt="user image"
+                  />
+                  Filter Results
+                  <FilterLeft />
+                </button>
               </div>
-              <div
-                className="flex items-center gap-2"
-                role="button"
-                onClick={() => setFilterDialogOpen(true)}
-              >
-                <span className="text-lg">Filter</span>
-                <FilterLeft />
+              <div className="grid grid-rows-2 grid-flow-col">
+                {items.map((item) => (
+                  <div key={item._id}>
+                    <Image
+                      src={item.product_images}
+                      alt={item.product_name}
+                      width={200}
+                      height={200}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
-            {items && <ResultsContainer items={items} />}
-            <div className="w-full pt-4">
-              <Link href="/upload">
-                <button className="dark-background w-full flex justify-center items-center text-lg p-4 gap-2 rounded-full">
-                  <ArrowRepeat />
+
+            <div className="flex flex-col h-screen md:invisible visible">
+              {/* Header */}
+              <div className="flex items-center justify-between pb-4 border-b-2 border-black">
+                <div className="flex items-center text-lg	">
+                  <Image
+                    className="rounded-full mr-3"
+                    src={image}
+                    width={24}
+                    height={24}
+                    alt="user image"
+                  />
+                  Results
+                </div>
+                <button className="flex items-center text-lg">
+                  Filter <FilterLeft width={24} height={24} className="ml-3" />
+                </button>
+              </div>
+
+              {/* Results Content (scrollable) */}
+              <div className="flex-1 overflow-auto">
+                {items && <ResultsContainer items={items} />}
+              </div>
+
+              {/* Footer */}
+              <div className="flex items-center justify-center p-4 m-6">
+                <button
+                  className="flex items-center justify-center rounded-full w-full font-medium text-white bg-black p-3 text-lg leading-snug tracking-tight"
+                  type="button"
+                >
+                  <ArrowRepeat className="mr-2" />
                   Choose a new outfit
                 </button>
-              </Link>
+              </div>
             </div>
           </div>
         )}
-      </section>
-      <FilterDialog
+      </div>
+      {/* <FilterDialog
         isOpen={filterDialogOpen}
         onClose={() => setFilterDialogOpen(false)}
         filters={filters}
@@ -106,7 +140,7 @@ export default function RecommendedProducts() {
           getProducts();
           setFilterDialogOpen(false);
         }}
-      />
+      /> */}
     </>
   );
 }
