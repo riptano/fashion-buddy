@@ -104,7 +104,7 @@ export default function UploadPhotoDialog({
           <div className="flex flex-col justify-center w-full h-full items-center">
             {/* Image display */}
 
-            <div className="relative flex items-center w-full h-full justify-center ">
+            <div className="relative flex items-center w-full h-full justify-center">
               <Image
                 className="sm:p-6"
                 src={image}

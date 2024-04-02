@@ -66,9 +66,12 @@ export default function RecommendedProducts() {
         ) : (
           <div className="flex flex-col p-6 md:p-0 h-full">
             {/* Filter Results desktop */}
-            <div className="hidden md:flex z-50">
-              <div className="absolute top-6 right-6 ">
-                <button className="flex gap-4 items-center justify-center rounded-full cream-background px-6 py-4">
+            <div className="hidden md:flex w-full">
+              <div className="absolute top-6 right-6">
+                <button
+                  className="flex gap-4 items-center justify-center rounded-full cream-background px-6 py-4"
+                  onClick={() => console.log("clicked")}
+                >
                   <Image
                     className="rounded-full"
                     src={image}
@@ -80,21 +83,22 @@ export default function RecommendedProducts() {
                   <FilterLeft />
                 </button>
               </div>
-              <div className="grid grid-rows-2 grid-flow-col">
-                {items.map((item) => (
-                  <div key={item._id}>
-                    <Image
+
+              <div className="min-h-screen max-w-full">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
+                  {items.map((item) => (
+                    <img
+                      key={item._id}
                       src={item.product_images}
                       alt={item.product_name}
-                      width={200}
-                      height={200}
+                      className="w-full h-auto"
                     />
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-col h-screen md:invisible visible">
+            <div className="flex flex-col h-screen md:hidden">
               {/* Header */}
               <div className="flex items-center justify-between pb-4 border-b-2 border-black">
                 <div className="flex items-center text-lg	">
