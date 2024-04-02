@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { useImage, useProcessedImage } from "@/components/ImageContext";
 import ResultsContainer from "@/components/ResultsContainer";
@@ -33,7 +33,7 @@ export default function RecommendedProducts() {
         body: JSON.stringify({
           imageBase64: processedImage.base64Data,
           fileType: processedImage.fileType,
-          filters
+          filters,
         }),
       });
 
@@ -46,7 +46,7 @@ export default function RecommendedProducts() {
       console.error(error);
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (processedImage) {
@@ -60,14 +60,20 @@ export default function RecommendedProducts() {
     <>
       <section className="cream-background h-full">
         {loading ? (
-          <div className="flex justify-center items-center h-full">
+          <div className="flex justify-center items-center h-screen">
             <Image src={loadingGif} alt="loading" width={80} height={80} />
           </div>
         ) : (
           <div className="flex flex-col p-6 h-full">
             <div className="flex justify-between items-center pb-4 border-bottom">
               <div className="flex gap-4 items-center">
-                <Image className="rounded-full" src={image} width={24} height={24} alt="user image" />
+                <Image
+                  className="rounded-full"
+                  src={image}
+                  width={24}
+                  height={24}
+                  alt="user image"
+                />
                 <h3 className="text-lg">Results</h3>
               </div>
               <div
@@ -97,10 +103,10 @@ export default function RecommendedProducts() {
         filters={filters}
         setFilters={setFilters}
         onApply={() => {
-          getProducts()
-          setFilterDialogOpen(false)
+          getProducts();
+          setFilterDialogOpen(false);
         }}
       />
     </>
-  )
+  );
 }

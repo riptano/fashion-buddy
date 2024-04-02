@@ -10,6 +10,7 @@ import {
 } from "react-bootstrap-icons";
 import { useImage, useProcessedImage } from "@/components/ImageContext";
 import Image from "next/image";
+import Link from "next/link";
 
 interface UploadPhotoDialogProps {
   isOpen: boolean;
@@ -73,47 +74,55 @@ export default function UploadPhotoDialog({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 p-4 sm:p-6">
-      {/* Background overlay */}
+      {/* Overlay wrapper */}
+
       <div
         className="fixed inset-0 bg-black opacity-75"
         onClick={onClose}
       ></div>
+      {/* Background overlay */}
 
-      {/* Modal content container */}
-      <div className="tan-background rounded-[50px] p-6 z-10 w-full max-w-2xl">
-        {/* Header section */}
+      <div className="tan-background md:rounded-[50px] p-6 z-10 w-screen h-screen md:h-[658px] sm:max-w-2xl flex flex-col justify-between">
+        {/* Modal container */}
+
         <div className="flex justify-between items-center mt-2 mx-2">
-          {/* Modal title */}
+          {/* Header section */}
+
           <h2 className="text-xl font-semibold">Search by image</h2>
-          {/* Close button */}
+          {/* Modal title */}
+
           <button
             className="text-black hover:text-gray-700 focus:outline-none"
             onClick={onClose}
           >
             <X size={24} />
           </button>
+          {/* Close button */}
         </div>
 
-        {/* Main content section */}
         {image ? (
-          <div className="h-[474px] flex flex-col justify-center items-center">
-            <div className="h-full w-full flex items-center justify-center p-4">
+          <div className="flex flex-col justify-center w-full h-full items-center">
+            {/* Image display */}
+
+            <div className="relative flex items-center w-full h-full justify-center ">
               <Image
-                className="rounded-lg object-contain"
+                className="sm:p-6"
                 src={image}
                 alt="user image"
-                width={300}
-                height={474}
+                layout="fill"
+                objectFit="contain"
               />
+              {/* User image */}
             </div>
           </div>
         ) : (
-          <div className="h-[474px] flex flex-col justify-center items-center">
-            {/* Image section */}
+          <div className="flex flex-col justify-center items-center h-full">
+            {/* Upload prompt */}
+
             <div className="flex justify-center items-center gap-4 opacity-10">
-              {/* Camera icon */}
               <Camera size={48} />
-              {/* Separator line */}
+              {/* Camera icon */}
+
               <svg
                 width="35"
                 height="121"
@@ -127,41 +136,75 @@ export default function UploadPhotoDialog({
                   strokeWidth="3"
                 />
               </svg>
-              {/* File icon */}
+              {/* Separator line */}
+
               <FileEarmark size={48} />
+              {/* File icon */}
             </div>
 
-            {/* Text section */}
             <div className="text-center pt-6">
+              {/* Text section */}
+
               <p>Add a photo of the style you love.</p>
+              {/* Instruction text */}
+
               <p>We&apos;ll help you add it to your wardrobe.</p>
+              {/* Additional info */}
             </div>
           </div>
         )}
 
-        {/* Button section */}
-        <div className="flex items-center justify-center py-3">
-          {/* Upload button */}
-          <input
-            className="hidden"
-            id="uploadInput"
-            accept="image/*"
-            ref={uploadInputRef}
-            type="file"
-            onChange={onImageChange}
-          />
-          <label htmlFor="uploadInput">
-            <button
-              className="flex items-center justify-center rounded-full w-80 font-medium text-white bg-black p-3 text-lg leading-snug tracking-tight"
-              onClick={handleUploadClick}
-              type="button"
-            >
-              {/* Upload icon */}
-              <Upload className="mr-2" />
-              Upload Photo
-            </button>
-          </label>
-          {/* Separator line */}
+        <div className="flex items-center justify-center pb-3">
+          {/* Button section */}
+
+          {!image ? (
+            <>
+              <input
+                className="hidden"
+                id="uploadInput"
+                accept="image/*"
+                ref={uploadInputRef}
+                type="file"
+                onChange={onImageChange}
+              />
+              {/* File input */}
+
+              <label htmlFor="uploadInput">
+                <button
+                  className="flex items-center justify-center rounded-full w-80 font-medium text-white bg-black p-3 text-lg leading-snug tracking-tight"
+                  onClick={handleUploadClick}
+                  type="button"
+                >
+                  <Upload className="mr-2" />
+                  {/* Upload button */}
+                  Upload Photo
+                </button>
+              </label>
+            </>
+          ) : (
+            <div className="flex gap-4">
+              {/* Action buttons */}
+
+              <Link className="grow" href="/recommended-products">
+                <button
+                  className="flex items-center justify-center rounded-full w-80 font-medium text-black slime-background p-3 text-lg leading-snug tracking-tight"
+                  onClick={handleUploadClick}
+                  type="button"
+                >
+                  <Stars className="mr-2" />
+                  {/* Recommend button */}
+                  Recommend products
+                </button>
+              </Link>
+              <button
+                className="dark-background flex items-center justify-center rounded-full px-5"
+                onClick={handleRefreshClick}
+              >
+                <ArrowRepeat />
+                {/* Refresh button */}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
