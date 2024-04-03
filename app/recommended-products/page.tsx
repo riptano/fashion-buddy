@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import loadingGif from "@/assets/hourglass.gif";
 import { Filters } from "@/utils/types";
 import FilterDrawer from "@/components/FilterDrawer";
+import FilterDialog from "@/components/FilterDialog";
 
 export default function RecommendedProducts() {
   const router = useRouter();
@@ -140,7 +141,10 @@ export default function RecommendedProducts() {
                   />
                   Results
                 </div>
-                <button className="flex items-center text-lg">
+                <button
+                  className="flex items-center text-lg"
+                  onClick={() => setFilterDialogOpen(true)}
+                >
                   Filter <FilterLeft width={24} height={24} className="ml-3" />
                 </button>
               </div>
@@ -164,6 +168,17 @@ export default function RecommendedProducts() {
           </div>
         )}
       </div>
+
+      <FilterDialog
+        isOpen={filterDialogOpen}
+        onClose={() => setFilterDialogOpen(false)}
+        filters={filters}
+        setFilters={setFilters}
+        onApply={() => {
+          getProducts();
+          setFilterDialogOpen(false);
+        }}
+      />
 
       {isOpen && (
         <>
