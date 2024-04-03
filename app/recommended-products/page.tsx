@@ -3,12 +3,11 @@ import { useEffect, useState } from "react";
 import { useImage, useProcessedImage } from "@/components/ImageContext";
 import ResultsContainer from "@/components/ResultsContainer";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRepeat, FilterLeft } from "react-bootstrap-icons";
+import { ArrowRepeat, Cart, FilterLeft } from "react-bootstrap-icons";
 import { useRouter } from "next/navigation";
 import loadingGif from "@/assets/hourglass.gif";
 import { Filters } from "@/utils/types";
-import FilterDialog from "@/components/FilterDialog";
+import FilterDrawer from "./FilterDrawer";
 
 export default function RecommendedProducts() {
   const router = useRouter();
@@ -17,6 +16,7 @@ export default function RecommendedProducts() {
   const [image] = useImage();
   const [processedImage] = useProcessedImage();
   const [filterDialogOpen, setFilterDialogOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>({
     categories: [],
     gender: ["all"],
@@ -70,12 +70,12 @@ export default function RecommendedProducts() {
             <Image src={loadingGif} alt="loading" width={80} height={80} />
           </div>
         ) : (
-          <div className="flex flex-col p-6 md:p-0 h-full">
+          <div className="flex flex-col md:p-0 h-full">
             {/* Filter Results desktop */}
             <div className="hidden md:flex w-full">
               <div
-                className="absolute top-6 right-6"
-                onClick={() => console.log("clicked")}
+                className="fixed top-6 right-6"
+                onClick={() => setIsOpen(!isOpen)}
               >
                 <button className="flex gap-4 items-center justify-center rounded-full cream-background px-6 py-4">
                   <Image
@@ -91,7 +91,7 @@ export default function RecommendedProducts() {
               </div>
 
               <div className="min-h-screen max-w-full">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
                   {items.map((item) => (
                     <div key={item._id} className="w-full h-auto">
                       <Image
@@ -101,11 +101,25 @@ export default function RecommendedProducts() {
                         height={400}
                         objectFit="cover"
                       />
-                      <div>
-                        <h5 className="text-base font-semibold truncate mb-1">
+                      <div className="p-4 cream-background">
+                        <h5 className="text-base font-semibold truncate pb-2">
                           {formatTitle(item.product_name)}
                         </h5>
-                        <p className="text-sm truncate-desc">{item.details}</p>
+                        <p className="text-sm truncate-desc text-sm text-gray-600">
+                          {item.details}
+                        </p>
+                        <div className="grid grid-cols-4 items-center gap-2 pt-2">
+                          <div className="col-span-2 text-lg font-bold">
+                            ${item.price}
+                          </div>
+                          <button className="bg-white py-2 rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
+                            {Math.round(item.$similarity * 1000) / 10}% Match
+                          </button>
+                          <button className="slime-background py-2 rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
+                            <Cart className="mr-2" />
+                            Buy
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -115,7 +129,7 @@ export default function RecommendedProducts() {
 
             <div className="flex flex-col h-screen md:hidden">
               {/* Header */}
-              <div className="flex items-center justify-between pb-4 border-b-2 border-black">
+              <div className="flex items-center justify-between p-4 border-b-2 border-black">
                 <div className="flex items-center text-lg	">
                   <Image
                     className="rounded-full mr-3"
@@ -150,16 +164,17 @@ export default function RecommendedProducts() {
           </div>
         )}
       </div>
-      {/* <FilterDialog
-        isOpen={filterDialogOpen}
-        onClose={() => setFilterDialogOpen(false)}
-        filters={filters}
-        setFilters={setFilters}
-        onApply={() => {
-          getProducts();
-          setFilterDialogOpen(false);
-        }}
-      /> */}
+
+      {isOpen && (
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+          <FilterDrawer onClose={() => setIsOpen(false)} image={image} />
+        </>
+      )}
     </>
   );
 }
