@@ -12,15 +12,7 @@ import { useImage, useProcessedImage } from "@/components/ImageContext";
 import Image from "next/image";
 import Link from "next/link";
 
-interface UploadPhotoDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export default function UploadPhotoDialog({
-  isOpen,
-  onClose,
-}: UploadPhotoDialogProps) {
+export default function UploadPhotoDialog(props) {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
@@ -68,7 +60,7 @@ export default function UploadPhotoDialog({
     });
   };
 
-  if (!isOpen) {
+  if (!props.isOpen) {
     return null;
   }
 
@@ -78,7 +70,7 @@ export default function UploadPhotoDialog({
 
       <div
         className="fixed inset-0 bg-black opacity-75"
-        onClick={onClose}
+        onClick={props.onClose}
       ></div>
       {/* Background overlay */}
 
@@ -93,7 +85,7 @@ export default function UploadPhotoDialog({
 
           <button
             className="text-black hover:text-gray-700 focus:outline-none"
-            onClick={onClose}
+            onClick={props.onClose}
           >
             <X size={24} />
           </button>
