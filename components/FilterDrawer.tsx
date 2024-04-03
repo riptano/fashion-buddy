@@ -1,6 +1,6 @@
 import { ArrowRepeat, X } from "react-bootstrap-icons";
 import Image from "next/image";
-import datastaxLogo from "../../assets/datastax-logo.png";
+import datastaxLogo from "@/assets/datastax-logo.png";
 import { CATEGORIES, GENDERS } from "@/utils/consts";
 
 const FilterDrawer = ({ onClose, image }) => {
@@ -14,7 +14,7 @@ const FilterDrawer = ({ onClose, image }) => {
         <X size={32} />
       </button>
 
-      <div className="overflow-y-auto" style={{ height: "calc(100% - 8rem)" }}>
+      <div className="overflow-y-auto" style={{ height: "calc(100% - 5rem)" }}>
         <div className="py-2 mt-4">
           <div className="flex flex-col p-8">
             <div className="py-2 mt-4">
@@ -77,7 +77,7 @@ const FilterDrawer = ({ onClose, image }) => {
       </div>
 
       {/* Footer */}
-      <div className="absolute bottom-4 w-full  cream-background">
+      <div className="absolute bottom-4 w-full  border-t-2 pt-4 cream-background">
         <div className="flex justify-center gap-4">
           <button>Clear All</button>
           <button className="bg-black text-white rounded-full px-6 py-4">

@@ -7,7 +7,7 @@ import { ArrowRepeat, Cart, FilterLeft } from "react-bootstrap-icons";
 import { useRouter } from "next/navigation";
 import loadingGif from "@/assets/hourglass.gif";
 import { Filters } from "@/utils/types";
-import FilterDrawer from "./FilterDrawer";
+import FilterDrawer from "@/components/FilterDrawer";
 
 export default function RecommendedProducts() {
   const router = useRouter();
