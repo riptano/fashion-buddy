@@ -5,15 +5,17 @@ import datastaxLogo from "@/assets/datastax-logo.png";
 import { CATEGORIES, GENDERS } from "@/utils/consts";
 import UploadPhotoDialog from "@/app/upload/page";
 import { useState } from "react";
+import { useImage } from "./ImageContext";
 
 const FilterDrawer = ({
   onClose,
-  image,
   setFilters,
   filters,
   isSingleSelect = false,
   isOpen,
+  onApply,
 }) => {
+  const [image] = useImage();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const capitalizeFirstLetter = (str: string): string => {
@@ -92,21 +94,24 @@ const FilterDrawer = ({
               <div className="flex items-center justify-center py-4">
                 <button
                   className="flex items-center justify-center bg-black hover:brightness-75 text-white rounded-full px-6 py-4"
-                  onClick={() => setIsDialogOpen(true)}
+                  onClick={() => {
+                    onClose();
+                    setIsDialogOpen(true);
+                  }}
                 >
                   <ArrowRepeat size={20} className="mr-2" />
                   Choose a new outfit
                 </button>
               </div>
 
-              <div className="flex items-center justify-center pt-4 pb-8 border-b-2">
+              <div className="flex items-center justify-center pt-4 pb-8 text-xs border-b-2">
                 Powered by{" "}
                 <Image
                   className="ml-2"
                   src={datastaxLogo}
                   alt="DataStax Logo"
                   height={16}
-                  width={172}
+                  width={107}
                 />{" "}
               </div>
               <div className="text-lg pl-4 pb-3 pt-6 mb-6 border-b-2 border-black">
@@ -171,7 +176,13 @@ const FilterDrawer = ({
             >
               Clear All
             </button>
-            <button className="bg-black hover:brightness-75 text-white text-lg rounded-full flex items-center justify-center bg-black text-white rounded-full px-6 py-4">
+            <button
+              className="bg-black hover:brightness-75 text-white text-lg rounded-full flex items-center justify-center bg-black text-white rounded-full px-6 py-4"
+              onClick={() => {
+                onApply();
+                onClose();
+              }}
+            >
               <FilterRight className="mr-2" size={24} />
               Apply Filters
             </button>
@@ -181,6 +192,7 @@ const FilterDrawer = ({
       <UploadPhotoDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
+        reset={true}
       />
     </>
   );

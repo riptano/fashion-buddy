@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowRepeat,
   X,
@@ -13,6 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function UploadPhotoDialog(props) {
+  const [reset, setReset] = useState(props.reset);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,6 +39,7 @@ export default function UploadPhotoDialog(props) {
       const i = event.target.files[0];
       setImage(URL.createObjectURL(i));
     }
+    setReset(false);
   };
 
   const handleUploadClick = () => {
@@ -53,7 +55,7 @@ export default function UploadPhotoDialog(props) {
   };
 
   const handleRefreshClick = () => {
-    setImage("");
+    setReset(true);
     setProcessedImage({
       base64Data: "",
       fileType: "",
@@ -92,7 +94,7 @@ export default function UploadPhotoDialog(props) {
           {/* Close button */}
         </div>
 
-        {image ? (
+        {image && !reset ? (
           <div className="flex flex-col justify-center w-full h-full items-center">
             {/* Image display */}
 
@@ -148,7 +150,30 @@ export default function UploadPhotoDialog(props) {
         <div className="flex items-center justify-center pb-3">
           {/* Button section */}
 
-          {!image ? (
+          {image && !reset ? (
+            <div className="flex gap-4">
+              {/* Action buttons */}
+
+              <Link className="grow" href="/recommended-products">
+                <button
+                  className="flex items-center justify-center rounded-full w-80 font-medium hover:brightness-75 text-black slime-background p-3 text-lg leading-snug tracking-tight"
+                  onClick={handleUploadClick}
+                  type="button"
+                >
+                  <Stars size={20} className="mr-2" />
+                  {/* Recommend button */}
+                  Recommend products
+                </button>
+              </Link>
+              <button
+                className="dark-background flex items-center justify-center hover:brightness-75 rounded-full px-5"
+                onClick={handleRefreshClick}
+              >
+                <ArrowRepeat size={20} />
+                {/* Refresh button */}
+              </button>
+            </div>
+          ) : (
             <>
               <input
                 className="hidden"
@@ -172,29 +197,6 @@ export default function UploadPhotoDialog(props) {
                 </button>
               </label>
             </>
-          ) : (
-            <div className="flex gap-4">
-              {/* Action buttons */}
-
-              <Link className="grow" href="/recommended-products">
-                <button
-                  className="flex items-center justify-center rounded-full w-80 font-medium hover:brightness-75 text-black slime-background p-3 text-lg leading-snug tracking-tight"
-                  onClick={handleUploadClick}
-                  type="button"
-                >
-                  <Stars size={20} className="mr-2" />
-                  {/* Recommend button */}
-                  Recommend products
-                </button>
-              </Link>
-              <button
-                className="dark-background flex items-center justify-center hover:brightness-75 rounded-full px-5"
-                onClick={handleRefreshClick}
-              >
-                <ArrowRepeat size={20} />
-                {/* Refresh button */}
-              </button>
-            </div>
           )}
         </div>
       </div>
