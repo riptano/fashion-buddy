@@ -50,7 +50,7 @@ export default function Home() {
 
           {/* "Get started" button */}
           <button
-            className="slime-background flex items-center justify-center rounded-full text-lg font-semibold mt-3 w-full px-6 py-3"
+            className="slime-background flex items-center hover:brightness-75 justify-center rounded-full text-lg font-semibold mt-3 w-full px-6 py-3"
             onClick={handleOpenDialog}
           >
             Get started

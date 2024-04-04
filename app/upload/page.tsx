@@ -162,7 +162,7 @@ export default function UploadPhotoDialog(props) {
 
               <label htmlFor="uploadInput">
                 <button
-                  className="flex items-center justify-center rounded-full w-80 font-medium text-white bg-black p-3 text-lg leading-snug tracking-tight"
+                  className="flex items-center hover:brightness-75 justify-center rounded-full w-80 font-medium text-white bg-black p-3 text-lg leading-snug tracking-tight"
                   onClick={handleUploadClick}
                   type="button"
                 >
@@ -178,20 +178,20 @@ export default function UploadPhotoDialog(props) {
 
               <Link className="grow" href="/recommended-products">
                 <button
-                  className="flex items-center justify-center rounded-full w-80 font-medium text-black slime-background p-3 text-lg leading-snug tracking-tight"
+                  className="flex items-center justify-center rounded-full w-80 font-medium hover:brightness-75 text-black slime-background p-3 text-lg leading-snug tracking-tight"
                   onClick={handleUploadClick}
                   type="button"
                 >
-                  <Stars className="mr-2" />
+                  <Stars size={20} className="mr-2" />
                   {/* Recommend button */}
                   Recommend products
                 </button>
               </Link>
               <button
-                className="dark-background flex items-center justify-center rounded-full px-5"
+                className="dark-background flex items-center justify-center hover:brightness-75 rounded-full px-5"
                 onClick={handleRefreshClick}
               >
-                <ArrowRepeat />
+                <ArrowRepeat size={20} />
                 {/* Refresh button */}
               </button>
             </div>

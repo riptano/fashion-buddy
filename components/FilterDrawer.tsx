@@ -80,7 +80,7 @@ const FilterDrawer = ({
               </div>
               <div className="flex items-center justify-center py-4">
                 <button
-                  className="flex items-center justify-center bg-black text-white rounded-full px-6 py-4"
+                  className="flex items-center justify-center bg-black hover:brightness-75 text-white rounded-full px-6 py-4"
                   onClick={() => setIsDialogOpen(true)}
                 >
                   <ArrowRepeat size={20} className="mr-2" />
@@ -105,7 +105,7 @@ const FilterDrawer = ({
                 {GENDERS.map((gender, index) => (
                   <button
                     key={gender}
-                    className={`py-3 px-4 rounded-full ${
+                    className={`py-3 px-4 hover:brightness-75 rounded-full ${
                       index === GENDERS.length - 1 ? "col-span-2" : ""
                     } ${
                       filters.gender.includes(gender)
@@ -127,7 +127,7 @@ const FilterDrawer = ({
                 {CATEGORIES.map((category, index) => (
                   <button
                     key={category}
-                    className={`py-3 px-4 rounded-full ${
+                    className={`py-3 px-4 hover:brightness-75 rounded-full ${
                       index === CATEGORIES.length - 1 ? "col-span-2" : ""
                     } ${
                       filters.categories.includes(category)
@@ -150,6 +150,7 @@ const FilterDrawer = ({
         <div className="absolute bottom-4 w-full  border-t-2 pt-4 cream-background">
           <div className="grid grid-cols-2 justify-center gap-4 text-lg sm:px-2">
             <button
+              className="hover:brightness-75"
               onClick={() => {
                 setFilters({
                   gender: ["all"],
@@ -159,7 +160,7 @@ const FilterDrawer = ({
             >
               Clear All
             </button>
-            <button className="bg-black text-white text-lg rounded-full flex items-center justify-center bg-black text-white rounded-full px-6 py-4">
+            <button className="bg-black hover:brightness-75 text-white text-lg rounded-full flex items-center justify-center bg-black text-white rounded-full px-6 py-4">
               <FilterRight className="mr-2" size={24} />
               Apply Filters
             </button>

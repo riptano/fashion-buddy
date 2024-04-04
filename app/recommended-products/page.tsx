@@ -108,20 +108,20 @@ export default function RecommendedProducts() {
                         <p className="text-sm truncate-desc text-sm text-gray-600">
                           {item.details}
                         </p>
-                        <div className="grid grid-cols-4 items-center gap-2 pt-2">
-                          <div className="col-span-2 text-lg font-bold">
+                        <div className="flex items-center gap-2 pt-2">
+                          <div className=" flex-auto text-lg font-bold">
                             ${item.price}
                           </div>
-                          <button className="bg-white cursor-default py-2 rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
+                          <button className="bg-white cursor-default py-2 px-2 rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
                             {Math.round(item.$similarity * 1000) / 10}% Match
                           </button>
                           <Link
-                            className="slime-background py-2 rounded-full flex justify-center items-center"
+                            className="slime-background hover:brightness-75 py-2 px-2 rounded-full flex justify-center items-center"
                             href={item.link}
                             rel="noopener noreferrer"
                             target="_blank"
                           >
-                            <button className="slime-background rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
+                            <button className="rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
                               <Cart className="mr-2" />
                               Buy
                             </button>
