@@ -91,7 +91,7 @@ export default function RecommendedProducts() {
               </div>
 
               <div className="min-h-screen max-w-full">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
                   {items.map((item) => (
                     <div key={item._id} className="w-full h-auto">
                       <Image
