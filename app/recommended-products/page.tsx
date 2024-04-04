@@ -185,22 +185,13 @@ export default function RecommendedProducts() {
           setFilterDialogOpen(false);
         }}
       />
-
-      {isOpen && (
-        <>
-          {/* Overlay */}
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={() => setIsOpen(false)}
-          />
-          <FilterDrawer
-            onClose={() => setIsOpen(false)}
-            image={image}
-            setFilters={setFilters}
-            filters={filters}
-          />
-        </>
-      )}
+      <FilterDrawer
+        onClose={() => setIsOpen(false)}
+        image={image}
+        setFilters={setFilters}
+        filters={filters}
+        isOpen={isOpen}
+      />
     </>
   );
 }

@@ -12,6 +12,7 @@ const FilterDrawer = ({
   setFilters,
   filters,
   isSingleSelect = false,
+  isOpen,
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -56,7 +57,17 @@ const FilterDrawer = ({
 
   return (
     <>
-      <div className="fixed top-0 right-0 md:w-[32rem] w-screen h-full shadow-xl transition-transform transform translate-x-0 z-50 cream-background">
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={onClose}
+        />
+      )}
+      <div
+        className={`fixed top-0 right-0 md:w-[32rem] w-screen h-full shadow-xl transition-transform transform ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        } z-50 cream-background`}
+      >
         {/* Header */}
         <button
           className="absolute top-4 right-4 p-2 rounded-md"
