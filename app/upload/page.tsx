@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function UploadPhotoDialog(props) {
-  const [reset, setReset] = useState(props.reset);
+  const [reset, setReset] = useState(true);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const uploadInputRef = useRef<HTMLInputElement>(null);
 

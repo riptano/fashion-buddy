@@ -192,7 +192,6 @@ const FilterDrawer = ({
       <UploadPhotoDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        reset={true}
       />
     </>
   );
