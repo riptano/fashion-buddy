@@ -1,11 +1,11 @@
 export const CATEGORIES = [
   "TOPS",
   "BOTTOMS",
-  "DRESSES_JUMPSUITS",
   "SHOES",
   "ACCESSORIES",
   "OUTERWEAR",
   "ACTIVEWEAR",
+  "DRESSES_JUMPSUITS",
 ];
 
-export const GENDERS = ["all", "men", "women"];
+export const GENDERS = ["women", "men", "all"];

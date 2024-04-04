@@ -9,6 +9,7 @@ import loadingGif from "@/assets/hourglass.gif";
 import { Filters } from "@/utils/types";
 import FilterDrawer from "@/components/FilterDrawer";
 import FilterDialog from "@/components/FilterDialog";
+import Link from "next/link";
 
 export default function RecommendedProducts() {
   const router = useRouter();
@@ -78,16 +79,14 @@ export default function RecommendedProducts() {
                 className="fixed top-6 right-6"
                 onClick={() => setIsOpen(!isOpen)}
               >
-                <button className="flex gap-4 items-center justify-center rounded-full cream-background px-6 py-4">
-                  <Image
-                    className="rounded-full"
+                <button className="flex gap-2 items-center justify-center rounded-full cream-background px-6 py-3">
+                  <img
+                    className="w-6 h-6 rounded-full mx-auto object-cover"
                     src={image}
-                    width={24}
-                    height={24}
                     alt="user image"
                   />
                   Filter Results
-                  <FilterLeft />
+                  <FilterLeft size={24} />
                 </button>
               </div>
 
@@ -116,10 +115,17 @@ export default function RecommendedProducts() {
                           <button className="bg-white py-2 rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
                             {Math.round(item.$similarity * 1000) / 10}% Match
                           </button>
-                          <button className="slime-background py-2 rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
-                            <Cart className="mr-2" />
-                            Buy
-                          </button>
+                          <Link
+                            className="slime-background py-2 rounded-full flex justify-center items-center"
+                            href={item.link}
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            <button className="slime-background rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
+                              <Cart className="mr-2" />
+                              Buy
+                            </button>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -187,7 +193,12 @@ export default function RecommendedProducts() {
             className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <FilterDrawer onClose={() => setIsOpen(false)} image={image} />
+          <FilterDrawer
+            onClose={() => setIsOpen(false)}
+            image={image}
+            setFilters={setFilters}
+            filters={filters}
+          />
         </>
       )}
     </>

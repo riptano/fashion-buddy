@@ -104,7 +104,6 @@ export default function UploadPhotoDialog(props) {
                 layout="fill"
                 objectFit="contain"
               />
-              {/* User image */}
             </div>
           </div>
         ) : (
