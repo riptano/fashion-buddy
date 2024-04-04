@@ -112,7 +112,7 @@ export default function RecommendedProducts() {
                           <div className="col-span-2 text-lg font-bold">
                             ${item.price}
                           </div>
-                          <button className="bg-white py-2 rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
+                          <button className="bg-white cursor-default py-2 rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
                             {Math.round(item.$similarity * 1000) / 10}% Match
                           </button>
                           <Link
