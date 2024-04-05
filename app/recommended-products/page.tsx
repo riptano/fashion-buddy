@@ -64,6 +64,19 @@ export default function RecommendedProducts() {
     });
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("no-scroll");
+    } else {
+      document.body.classList.remove("no-scroll");
+    }
+
+    // Cleanup function to remove the class when the component unmounts
+    return () => {
+      document.body.classList.remove("no-scroll");
+    };
+  }, [isOpen]);
+
   return (
     <>
       <div className="cream-background h-screen">
@@ -72,7 +85,7 @@ export default function RecommendedProducts() {
             <Image src={loadingGif} alt="loading" width={80} height={80} />
           </div>
         ) : (
-          <div className="flex flex-col md:p-0 h-full">
+          <div className="flex flex-col md:p-0 h-full ">
             {/* Filter Results desktop */}
             <div className="hidden md:flex w-full">
               <div
@@ -90,8 +103,8 @@ export default function RecommendedProducts() {
                 </button>
               </div>
 
-              <div className="min-h-screen max-w-full">
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 ">
+              <div className="min-h-screen max-w-full ">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                   {items.map((item) => (
                     <div key={item._id} className="w-full h-auto">
                       <Image
@@ -101,7 +114,8 @@ export default function RecommendedProducts() {
                         height={400}
                         objectFit="cover"
                       />
-                      <div className="p-4 cream-background">
+                      <div className="p-4 cream-background max-w-[600px]">
+                        {" "}
                         <h5 className="text-base font-semibold truncate pb-2">
                           {formatTitle(item.product_name)}
                         </h5>
@@ -109,14 +123,14 @@ export default function RecommendedProducts() {
                           {item.details}
                         </p>
                         <div className="flex items-center gap-2 pt-2">
-                          <div className=" flex-auto text-lg font-bold">
+                          <div className="flex-auto text-lg font-bold">
                             ${item.price}
                           </div>
                           <button className="bg-white cursor-default py-2 px-2 rounded-full flex justify-center items-center text-xs text-nowrap whitespace-nowrap">
                             {Math.round(item.$similarity * 1000) / 10}% Match
                           </button>
                           <Link
-                            className="slime-background hover:brightness-75 py-2 px-2 rounded-full flex justify-center items-center"
+                            className="slime-background hover:brightness-75 py-2 px-4 rounded-full flex justify-center items-center"
                             href={item.link}
                             rel="noopener noreferrer"
                             target="_blank"
@@ -149,7 +163,7 @@ export default function RecommendedProducts() {
                 </div>
                 <button
                   className="flex items-center text-lg"
-                  onClick={() => setFilterDialogOpen(true)}
+                  onClick={() => setIsOpen(true)}
                 >
                   Filter <FilterLeft width={24} height={24} className="ml-3" />
                 </button>
@@ -161,7 +175,7 @@ export default function RecommendedProducts() {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-center p-4 m-6">
+              <div className="flex items-center justify-center py-8 px-4 border-t-2">
                 <button
                   className="flex items-center justify-center rounded-full w-full font-medium text-white bg-black p-3 text-lg leading-snug tracking-tight"
                   type="button"
@@ -175,7 +189,7 @@ export default function RecommendedProducts() {
         )}
       </div>
 
-      <FilterDialog
+      {/* <FilterDialog
         isOpen={filterDialogOpen}
         onClose={() => setFilterDialogOpen(false)}
         filters={filters}
@@ -184,23 +198,17 @@ export default function RecommendedProducts() {
           getProducts();
           setFilterDialogOpen(false);
         }}
+      /> */}
+      <FilterDrawer
+        onClose={() => setIsOpen(false)}
+        setFilters={setFilters}
+        filters={filters}
+        isOpen={isOpen}
+        onApply={() => {
+          getProducts();
+          setIsOpen(false);
+        }}
       />
-
-      {isOpen && (
-        <>
-          {/* Overlay */}
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={() => setIsOpen(false)}
-          />
-          <FilterDrawer
-            onClose={() => setIsOpen(false)}
-            image={image}
-            setFilters={setFilters}
-            filters={filters}
-          />
-        </>
-      )}
     </>
   );
 }

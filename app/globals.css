@@ -56,4 +56,11 @@
     line-clamp: 2;
     -webkit-box-orient: vertical;
  }
+
+  .transition-transform {
+    transition: transform 0.3s ease;
+  }
+  .no-scroll {
+    overflow: hidden;
+  }
 }

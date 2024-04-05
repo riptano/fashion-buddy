@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowRepeat,
   X,
@@ -13,10 +13,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function UploadPhotoDialog(props) {
+  const [reset, setReset] = useState(true);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const uploadInputRef = useRef<HTMLInputElement>(null);
 
-  const [image, setImage] = useImage();
+  const [displayImage, setDisplayImage] = useImage();
+
   const [, setProcessedImage] = useProcessedImage();
 
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,8 +38,9 @@ export default function UploadPhotoDialog(props) {
     reader.readAsDataURL(file);
     if (event.target.files && event.target.files[0]) {
       const i = event.target.files[0];
-      setImage(URL.createObjectURL(i));
+      setDisplayImage(URL.createObjectURL(i));
     }
+    setReset(false);
   };
 
   const handleUploadClick = () => {
@@ -53,7 +56,7 @@ export default function UploadPhotoDialog(props) {
   };
 
   const handleRefreshClick = () => {
-    setImage("");
+    setReset(true);
     setProcessedImage({
       base64Data: "",
       fileType: "",
@@ -70,7 +73,10 @@ export default function UploadPhotoDialog(props) {
 
       <div
         className="fixed inset-0 bg-black opacity-75"
-        onClick={props.onClose}
+        onClick={() => {
+          props.onClose();
+          setReset(true);
+        }}
       ></div>
       {/* Background overlay */}
 
@@ -80,26 +86,29 @@ export default function UploadPhotoDialog(props) {
         <div className="flex justify-between items-center mt-2 mx-2">
           {/* Header section */}
 
-          <h2 className="text-xl font-semibold">Search by image</h2>
+          <h2 className="text-xl font-semibold">Search by displayImage</h2>
           {/* Modal title */}
 
           <button
             className="text-black hover:text-gray-700 focus:outline-none"
-            onClick={props.onClose}
+            onClick={() => {
+              props.onClose();
+              setReset(true);
+            }}
           >
             <X size={24} />
           </button>
           {/* Close button */}
         </div>
 
-        {image ? (
+        {displayImage && !reset ? (
           <div className="flex flex-col justify-center w-full h-full items-center">
             {/* Image display */}
 
             <div className="relative flex items-center w-full h-full justify-center">
               <Image
                 className="sm:p-6"
-                src={image}
+                src={displayImage}
                 alt="user image"
                 layout="fill"
                 objectFit="contain"
@@ -148,7 +157,35 @@ export default function UploadPhotoDialog(props) {
         <div className="flex items-center justify-center pb-3">
           {/* Button section */}
 
-          {!image ? (
+          {displayImage && !reset ? (
+            <div className="flex gap-4">
+              {/* Action buttons */}
+
+              <Link className="grow" href="/recommended-products">
+                <button
+                  className="flex items-center justify-center rounded-full w-80 font-medium hover:brightness-75 text-black slime-background p-3 text-lg leading-snug tracking-tight"
+                  type="button"
+                  onClick={() => {
+                    if (props?.handleFilter) {
+                      props.handleFilter();
+                      setReset(true);
+                    }
+                  }}
+                >
+                  <Stars size={20} className="mr-2" />
+                  {/* Recommend button */}
+                  Recommend products
+                </button>
+              </Link>
+              <button
+                className="dark-background flex items-center justify-center hover:brightness-75 rounded-full px-5"
+                onClick={handleRefreshClick}
+              >
+                <ArrowRepeat size={20} />
+                {/* Refresh button */}
+              </button>
+            </div>
+          ) : (
             <>
               <input
                 className="hidden"
@@ -172,29 +209,6 @@ export default function UploadPhotoDialog(props) {
                 </button>
               </label>
             </>
-          ) : (
-            <div className="flex gap-4">
-              {/* Action buttons */}
-
-              <Link className="grow" href="/recommended-products">
-                <button
-                  className="flex items-center justify-center rounded-full w-80 font-medium hover:brightness-75 text-black slime-background p-3 text-lg leading-snug tracking-tight"
-                  onClick={handleUploadClick}
-                  type="button"
-                >
-                  <Stars size={20} className="mr-2" />
-                  {/* Recommend button */}
-                  Recommend products
-                </button>
-              </Link>
-              <button
-                className="dark-background flex items-center justify-center hover:brightness-75 rounded-full px-5"
-                onClick={handleRefreshClick}
-              >
-                <ArrowRepeat size={20} />
-                {/* Refresh button */}
-              </button>
-            </div>
           )}
         </div>
       </div>
