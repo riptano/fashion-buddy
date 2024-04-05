@@ -30,19 +30,19 @@ const Product = ({ item }: Props): JSX.Element => {
           </h5>
           <p className="text-sm truncate-desc">{item.details}</p>
         </div>
-        <div>
-          <p className="text-lg font-bold mb-1">${item.price}</p>
-          <div className="flex justify-between text-xs">
-            <span className="p-2 rounded-full bg-white">
+        <div className="flex justify-center items-center gap-2">
+          <p className="flex-1 text-lg font-bold">${item.price}</p>
+          <div className="text-xs">
+            <span className="py-2 px-3 rounded-full bg-white">
               {Math.round(item.$similarity * 1000) / 10}% Match
             </span>
-            <Link href={item.link} rel="noopener noreferrer" target="_blank">
-              <button className="slime-background flex items-center p-2 gap-2 rounded-full">
-                <Cart />
-                Buy
-              </button>
-            </Link>
           </div>
+          <Link href={item.link} rel="noopener noreferrer" target="_blank">
+            <button className="slime-background flex items-center text-xs rounded-full py-2 px-3">
+              <Cart className="mr-1" />
+              Buy
+            </button>
+          </Link>
         </div>
       </div>
     </div>

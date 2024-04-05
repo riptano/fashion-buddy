@@ -163,7 +163,7 @@ export default function RecommendedProducts() {
                 </div>
                 <button
                   className="flex items-center text-lg"
-                  onClick={() => setFilterDialogOpen(true)}
+                  onClick={() => setIsOpen(true)}
                 >
                   Filter <FilterLeft width={24} height={24} className="ml-3" />
                 </button>
@@ -189,7 +189,7 @@ export default function RecommendedProducts() {
         )}
       </div>
 
-      <FilterDialog
+      {/* <FilterDialog
         isOpen={filterDialogOpen}
         onClose={() => setFilterDialogOpen(false)}
         filters={filters}
@@ -198,7 +198,7 @@ export default function RecommendedProducts() {
           getProducts();
           setFilterDialogOpen(false);
         }}
-      />
+      /> */}
       <FilterDrawer
         onClose={() => setIsOpen(false)}
         setFilters={setFilters}
@@ -206,7 +206,7 @@ export default function RecommendedProducts() {
         isOpen={isOpen}
         onApply={() => {
           getProducts();
-          setFilterDialogOpen(false);
+          setIsOpen(false);
         }}
       />
     </>
