@@ -166,8 +166,10 @@ export default function UploadPhotoDialog(props) {
                   className="flex items-center justify-center rounded-full w-80 font-medium hover:brightness-75 text-black slime-background p-3 text-lg leading-snug tracking-tight"
                   type="button"
                   onClick={() => {
-                    props.handleFilter();
-                    setReset(true);
+                    if (props?.handleFilter) {
+                      props.handleFilter();
+                      setReset(true);
+                    }
                   }}
                 >
                   <Stars size={20} className="mr-2" />
