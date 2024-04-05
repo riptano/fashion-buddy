@@ -1,6 +1,5 @@
 import { ProductType } from "@/utils/types";
 import Link from "next/link";
-import Image from "next/image";
 import { Cart } from "react-bootstrap-icons";
 
 interface Props {
