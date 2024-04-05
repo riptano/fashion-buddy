@@ -175,7 +175,7 @@ export default function RecommendedProducts() {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-center p-4 m-6">
+              <div className="flex items-center justify-center py-8 px-4 border-t-2">
                 <button
                   className="flex items-center justify-center rounded-full w-full font-medium text-white bg-black p-3 text-lg leading-snug tracking-tight"
                   type="button"

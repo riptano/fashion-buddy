@@ -163,8 +163,8 @@ const FilterDrawer = ({
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-4 w-full  border-t-2 pt-4 cream-background">
-          <div className="grid grid-cols-2 justify-center gap-4 text-lg sm:px-2">
+        <div className="absolute bottom-4 w-full border-t-2 pt-4 cream-background">
+          <div className="grid grid-cols-2 justify-center gap-4 text-lg px-4">
             <button
               className="hover:brightness-75"
               onClick={() => {
