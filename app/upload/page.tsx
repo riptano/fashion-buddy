@@ -73,7 +73,10 @@ export default function UploadPhotoDialog(props) {
 
       <div
         className="fixed inset-0 bg-black opacity-75"
-        onClick={props.onClose}
+        onClick={() => {
+          props.onClose();
+          setReset(true);
+        }}
       ></div>
       {/* Background overlay */}
 
@@ -88,7 +91,10 @@ export default function UploadPhotoDialog(props) {
 
           <button
             className="text-black hover:text-gray-700 focus:outline-none"
-            onClick={props.onClose}
+            onClick={() => {
+              props.onClose();
+              setReset(true);
+            }}
           >
             <X size={24} />
           </button>
@@ -158,8 +164,11 @@ export default function UploadPhotoDialog(props) {
               <Link className="grow" href="/recommended-products">
                 <button
                   className="flex items-center justify-center rounded-full w-80 font-medium hover:brightness-75 text-black slime-background p-3 text-lg leading-snug tracking-tight"
-                  onClick={handleUploadClick}
                   type="button"
+                  onClick={() => {
+                    props.handleFilter();
+                    setReset(true);
+                  }}
                 >
                   <Stars size={20} className="mr-2" />
                   {/* Recommend button */}

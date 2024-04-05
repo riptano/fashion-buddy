@@ -190,6 +190,10 @@ const FilterDrawer = ({
         </div>
       </div>
       <UploadPhotoDialog
+        handleFilter={() => {
+          onApply();
+          setIsDialogOpen(false);
+        }}
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
       />
