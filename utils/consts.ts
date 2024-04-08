@@ -8,4 +8,4 @@ export const CATEGORIES = [
   "DRESSES_JUMPSUITS",
 ];
 
-export const GENDERS = ["women", "men", "all"];
+export const GENDERS = ["Women", "Men", "all"];
