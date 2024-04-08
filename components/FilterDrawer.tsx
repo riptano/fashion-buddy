@@ -11,7 +11,6 @@ const FilterDrawer = ({
   onClose,
   setFilters,
   filters,
-  isSingleSelect = false,
   isOpen,
   onApply,
 }) => {
@@ -49,7 +48,7 @@ const FilterDrawer = ({
     });
   };
 
-  const handleSelect = (option: string, selection: string, selectedOptions) => {
+  const handleSelect = (option: string, selection: string, selectedOptions, isSingleSelect = false) => {
     if (isSingleSelect) {
       handleRadioSelect(option, selection);
     } else {
@@ -129,7 +128,7 @@ const FilterDrawer = ({
                         : "bg-white"
                     }`}
                     onClick={() =>
-                      handleSelect(gender, "gender", filters.gender)
+                      handleSelect(gender, "gender", filters.gender, true)
                     }
                   >
                     {formatOption(gender)}
