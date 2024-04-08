@@ -135,8 +135,6 @@ const getFilters = (filters: Filters): Record<string, any> => {
   let categoryFilter;
   let genderFilter;
 
-  console.log(filters)
-
   if (filters.categories.length > 0) {
     categoryFilter = {
       $or: filters.categories.map((category) => ({ category: category })),
@@ -155,8 +153,6 @@ const getFilters = (filters: Filters): Record<string, any> => {
   } else if (categoryFilter || genderFilter) {
     filter = categoryFilter ? categoryFilter : genderFilter;
   }
-
-  console.log(filter)
 
   return filter;
 };
